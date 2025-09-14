@@ -1,6 +1,10 @@
 // context/ThemeContext.tsx
 import { createContext, useContext, useState, useEffect } from 'react'
+import { ThemeProvider as MuiThemeProvider } from '@mui/material/styles'
+import { CssBaseline } from '@mui/material'
+import { getMuiTheme } from '../theme/muiTheme'
 import type { Theme, ThemeContextType, ThemeProviderProps } from '../types/theme'
+
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
 
@@ -9,12 +13,12 @@ export const ThemeProvider = (props: ThemeProviderProps) => {
     const { children, defaultTheme } = props
     
     const [theme, setThemeState] = useState<Theme>(() => {
-        // Проверяем сохраненную тему в localStorage
         const savedTheme = localStorage.getItem('theme') as Theme
         return savedTheme || defaultTheme
     })
 
-    // Применяем тему к документу
+    const muiTheme = getMuiTheme(theme)
+
     useEffect(() => {
         document.documentElement.setAttribute('data-theme', theme)
         localStorage.setItem('theme', theme)
@@ -35,13 +39,18 @@ export const ThemeProvider = (props: ThemeProviderProps) => {
     }
 
     return (
-        <ThemeContext.Provider value={value}>
-            {children}
+        // <ThemeContext.Provider value={value}>
+        //     {children}
+        // </ThemeContext.Provider>
+         <ThemeContext.Provider value={value}>
+            <MuiThemeProvider theme={muiTheme}>
+                <CssBaseline />
+                {children}
+            </MuiThemeProvider>
         </ThemeContext.Provider>
     )
 }
 
-// Хук для использования контекста
 export const useTheme = (): ThemeContextType => {
     const context = useContext(ThemeContext)
     if (context === undefined) {

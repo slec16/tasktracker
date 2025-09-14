@@ -9,26 +9,15 @@ const Header = () => {
 
     const { theme, toggleTheme } = useTheme();
 
-    return(
+    return (
         <header className="w-full flex justify-between px-3 py-5">
-            <p className='text-4xl font-light'><span className='text-sky-600 font-bold'>T</span>ask<span className='text-sky-600 font-bold'>T</span>racker</p>
-            <div className='text-sky-600'>
-                {
-                    theme === 'light' ? 
-                    <IconButton
-                        onClick={toggleTheme}
-                    >
-                        <DarkModeIcon color='primary'/>
-                    </IconButton>
-                    :
-                    <IconButton
-                        onClick={toggleTheme}
-                    >
-                        <SunnyIcon color='primary'/>
-                    </IconButton>
-                }
+            <p className='text-4xl font-light'><span className='text-sky-600 dark:text-orange-500 font-bold'>T</span>ask<span className='text-sky-600 dark:text-orange-500 font-bold'>T</span>racker</p>
+            <div>
+                <IconButton onClick={toggleTheme}>
+                    {theme === 'light' ? <DarkModeIcon color='primary' /> : <SunnyIcon color='primary' />}
+                </IconButton>
                 <IconButton>
-                    <AccountCircleIcon />
+                    <AccountCircleIcon color='primary' />
                 </IconButton>
             </div>
         </header>
