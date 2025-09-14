@@ -1,15 +1,38 @@
+import Tabs from '@mui/material/Tabs'
+import Tab from '@mui/material/Tab'
+import {
+    Link,
+    matchPath,
+    useLocation,
+} from 'react-router'
+import { Button } from '@mui/material'
 
+const useRouteMatch = (patterns: readonly string[]) => {
+    const { pathname } = useLocation()
+
+    for (let i = 0; i < patterns.length; i += 1) {
+        const pattern = patterns[i]
+        if (!pattern) return
+        const possibleMatch = matchPath(pattern, pathname)
+        if (possibleMatch !== null) {
+            return possibleMatch
+        }
+    }
+
+    return null
+}
 
 const TabsRouter = () => {
+    const routeMatch = useRouteMatch(['/issues', '/boards', '/'])
+    const currentTab = routeMatch?.pattern?.path === '/' ? '/issues' : routeMatch?.pattern?.path
 
-    return(
-        <div className="w-full flex justify-start border">
-            <div className="mr-5">
-                tab 1
-            </div>
-            <div>
-                tab 2
-            </div>
+    return (
+        <div className="w-full flex justify-between">
+            <Tabs variant="scrollable" value={currentTab}>
+                <Tab label="Все задачи" value="/issues" to="/issues" component={Link} />
+                <Tab label="Проекты" value="/boards" to="/boards" component={Link} />
+            </Tabs>
+            <Button size='small' variant="outlined">Создать задачу</Button>
         </div>
     )
 }

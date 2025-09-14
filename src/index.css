@@ -10,7 +10,7 @@
 
 :root[data-theme="dark"] {
   --bg-color: #1a1a1a;
-  --text-color: #fffff;
+  --text-color: '#ffffff';
   --primary-color: #4dabf7;
   --secondary-color: #adb5bd;
 }
