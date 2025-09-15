@@ -34,7 +34,7 @@ const baseUrl = 'http://localhost:8080'
 
 export const taskApi = {
 
-    getTasks: async (): Promise<Task[]> => {
+    getTasks: async (): Promise<{data: Task[]}> => {
         const response = await fetch(`${baseUrl}/api/v1/tasks`)
         if (!response.ok) throw new Error('Failed to fetch tasks')
         return response.json();
