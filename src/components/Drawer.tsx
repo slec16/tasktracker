@@ -41,7 +41,8 @@ const DrawerContent = ({ drawerState, onCloseDrawer }: { drawerState: boolean, o
             <TextField
                 label="Описание"
                 multiline
-                rows={4}
+                minRows={4}
+                maxRows={10}
             // variant="standard"
             />
             <Divider />
