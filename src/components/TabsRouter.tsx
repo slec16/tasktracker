@@ -22,7 +22,7 @@ const useRouteMatch = (patterns: readonly string[]) => {
     return null
 }
 
-const TabsRouter = () => {
+const TabsRouter = ({openTaskDrawer}: {openTaskDrawer: () => void}) => {
     const routeMatch = useRouteMatch(['/issues', '/boards', '/'])
     const currentTab = routeMatch?.pattern?.path === '/' ? '/issues' : routeMatch?.pattern?.path
 
@@ -32,7 +32,7 @@ const TabsRouter = () => {
                 <Tab label="Все задачи" value="/issues" to="/issues" component={Link} />
                 <Tab label="Проекты" value="/boards" to="/boards" component={Link} />
             </Tabs>
-            <Button size='small' variant="outlined">Создать задачу</Button>
+            <Button size='small' variant="outlined" onClick={openTaskDrawer}>Создать задачу</Button>
         </div>
     )
 }
