@@ -5,16 +5,21 @@ import { CssBaseline } from '@mui/material'
 import { getMuiTheme } from '../theme/muiTheme'
 import type { Theme, ThemeContextType, ThemeProviderProps } from '../types/theme'
 
-
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
 
 export const ThemeProvider = (props: ThemeProviderProps) => {
-
-    const { children, defaultTheme } = props
+    const { children, defaultTheme = 'light' } = props
     
-    const [theme, setThemeState] = useState<Theme>(() => {
+   const [theme, setThemeState] = useState<Theme>(() => {
         const savedTheme = localStorage.getItem('theme') as Theme
-        return savedTheme || defaultTheme
+        if (savedTheme) return savedTheme
+        
+        if (typeof window !== 'undefined') {
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+            if (prefersDark) return 'dark'
+        }
+        
+        return defaultTheme
     })
 
     const muiTheme = getMuiTheme(theme)
@@ -23,6 +28,20 @@ export const ThemeProvider = (props: ThemeProviderProps) => {
         document.documentElement.setAttribute('data-theme', theme)
         localStorage.setItem('theme', theme)
     }, [theme])
+
+    useEffect(() => {
+        const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+        
+        const handleSystemThemeChange = (e: MediaQueryListEvent) => {
+            setThemeState(e.matches ? 'dark' : 'light')
+        }
+
+        mediaQuery.addEventListener('change', handleSystemThemeChange)
+
+        return () => {
+            mediaQuery.removeEventListener('change', handleSystemThemeChange)
+        }
+    }, [])
 
     const toggleTheme = () => {
         setThemeState(prevTheme => prevTheme === 'light' ? 'dark' : 'light')
@@ -39,10 +58,7 @@ export const ThemeProvider = (props: ThemeProviderProps) => {
     }
 
     return (
-        // <ThemeContext.Provider value={value}>
-        //     {children}
-        // </ThemeContext.Provider>
-         <ThemeContext.Provider value={value}>
+        <ThemeContext.Provider value={value}>
             <MuiThemeProvider theme={muiTheme}>
                 <CssBaseline />
                 {children}
