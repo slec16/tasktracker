@@ -2,6 +2,7 @@ import { type Task } from "../api/taskApi"
 
 type IssuesItemProps = {
     taskData: Task
+    openTaskDrawer: () => void
 }
 
 const StatusTimeline = ({ status }: { status: string }) => {
@@ -71,7 +72,7 @@ const StatusTimeline = ({ status }: { status: string }) => {
 }
 
 const IssuesItem = (props: IssuesItemProps) => {
-    const { taskData } = props
+    const { taskData, openTaskDrawer } = props
     const { title, priority, status, boardName, assignee } = taskData
 
     const priorityStyles = (priority: string) => {
@@ -88,7 +89,7 @@ const IssuesItem = (props: IssuesItemProps) => {
     }
 
     return (
-        <div className="w-4/5 grid grid-cols-[2fr_1fr_1fr_1.5fr_1.5fr] gap-4 items-center p-4 bg-white border border-gray-200 rounded-lg shadow-sm transition-all duration-300
+        <div onClick={openTaskDrawer} className="w-4/5 grid grid-cols-[2fr_1fr_1fr_1.5fr_1.5fr] gap-4 items-center p-4 bg-white border border-gray-200 rounded-lg shadow-sm transition-all duration-300
                         hover:shadow-lg hover:scale-[1.02] hover:border-blue-200 hover:bg-blue-50
                         dark:bg-gray-900 dark:border-gray-700 dark:hover:shadow-lg dark:hover:shadow-orange-900/20 dark:hover:scale-[1.02] dark:hover:border-orange-600/50 dark:hover:bg-orange-700/10">
             {/* Заголовок */}

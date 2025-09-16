@@ -30,7 +30,7 @@ function App() {
                         <Routes>
                             <Route path="/" element={<Navigate to="/issues" replace />} />
                             <Route path='/boards' element={<Boards />} />
-                            <Route path='/issues' element={<Issues />} />
+                            <Route path='/issues' element={<Issues openTaskDrawer={() => setIsDrawerOpen(true)}/>} />
                             <Route path='/board/:id' element={<Board />} />
                         </Routes>
                     </div>
