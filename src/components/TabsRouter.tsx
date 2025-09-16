@@ -23,8 +23,19 @@ const useRouteMatch = (patterns: readonly string[]) => {
 }
 
 const TabsRouter = ({openTaskDrawer}: {openTaskDrawer: () => void}) => {
-    const routeMatch = useRouteMatch(['/issues', '/boards', '/'])
-    const currentTab = routeMatch?.pattern?.path === '/' ? '/issues' : routeMatch?.pattern?.path
+    const routeMatch = useRouteMatch(['/issues', '/boards', '/board/:id', '/'])
+    
+    let currentTab = '/issues' 
+    
+    if (routeMatch?.pattern?.path) {
+        if (routeMatch.pattern.path === '/') {
+            currentTab = '/issues'
+        } else if (routeMatch.pattern.path === '/board/:id') {
+            currentTab = '/boards' 
+        } else {
+            currentTab = routeMatch.pattern.path
+        }
+    }
 
     return (
         <div className="w-full flex justify-between">

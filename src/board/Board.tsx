@@ -1,11 +1,11 @@
-
+import BoardTable from "./BoardTable"
 
 const Board = () => {
 
     return(
-        <div>
-            Board
-        </div>
+        <>
+            <BoardTable />
+        </>
     )
 }
 
