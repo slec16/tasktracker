@@ -23,7 +23,7 @@ export interface BoardTasks {
 const baseUrl = 'http://localhost:8080'
 
 export const boardApi = {
-    getBoards: async (): Promise<Board[]> => {
+    getBoards: async (): Promise<{data: Board[]}> => {
         const response = await fetch(`${baseUrl}/api/v1/boards`)
         if (!response.ok) throw new Error('Failed to fetch boards')
         return response.json()

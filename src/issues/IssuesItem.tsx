@@ -122,7 +122,7 @@ const IssuesItem = (props: IssuesItemProps) => {
                              group-hover:text-blue-600 dark:group-hover:text-blue-300 transition-colors duration-300">
                     Доска
                 </p>
-                <p className="text-sm font-medium text-gray-900 dark:text-gray-300
+                <p className="text-sm font-medium text-gray-900 dark:text-gray-300 text-center
                              group-hover:text-blue-700 dark:group-hover:text-blue-300 transition-colors duration-300">
                     {boardName}
                 </p>
