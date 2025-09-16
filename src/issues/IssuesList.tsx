@@ -9,7 +9,6 @@ type IssuesListProps = {
 const IssuesList = (props: IssuesListProps) => {
 
     const { taskList } = props
-    console.log(taskList)
 
     return (
         <div className="flex flex-col gap-y-3 pl-10">
