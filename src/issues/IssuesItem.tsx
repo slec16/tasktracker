@@ -1,4 +1,7 @@
 import { type Task } from "../api/taskApi"
+import DragHandleIcon from '@mui/icons-material/DragHandle'
+import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrowDown'
+import KeyboardDoubleArrowUpIcon from '@mui/icons-material/KeyboardDoubleArrowUp'
 
 type IssuesItemProps = {
     taskData: Task
@@ -25,7 +28,7 @@ const StatusTimeline = ({ status }: { status: string }) => {
                     ? `${currentIndex == 1 
                         ? 'bg-blue-500 border-blue-500 dark:bg-blue-600 dark:border-blue-600' 
                         : 'bg-green-500 border-green-500 dark:bg-green-600 dark:border-green-600'}`
-                    : 'bg-gray-400 border-gray-400 dark:bg-gray-500 dark:border-gray-500'}`}
+                    : 'bg-gray-400 border-gray-400 dark:bg-gray-400 dark:border-gray-400'}`}
             />
 
             {/* Линия между точками 1 и 2 */}
@@ -34,7 +37,7 @@ const StatusTimeline = ({ status }: { status: string }) => {
                     ? `${currentIndex == 1 
                         ? 'bg-blue-500 dark:bg-blue-600' 
                         : 'bg-green-500 dark:bg-green-600'}`
-                    : 'bg-gray-400 dark:bg-gray-500'}`}
+                    : 'bg-gray-400 dark:bg-gray-400'}`}
             />
 
             {/* Точка 2: In Progress */}
@@ -77,34 +80,37 @@ const IssuesItem = (props: IssuesItemProps) => {
 
     const priorityStyles = (priority: string) => {
         switch (priority) {
-            case 'Low':
-                return 'bg-gray-100 text-gray-700 border-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600'
-            case 'Medium':
-                return 'bg-yellow-100 text-yellow-700 border-yellow-300 dark:bg-yellow-700/40 dark:text-yellow-200 dark:border-yellow-600'
-            case 'High':
-                return 'bg-red-100 text-red-700 border-red-300 dark:bg-red-700/40 dark:text-red-200 dark:border-red-600'
-            default:
-                return 'bg-gray-100 text-gray-700 border-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600'
+            case 'Low': return 'bg-gray-100 text-gray-700 border-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600'
+            case 'Medium': return 'bg-yellow-100 text-yellow-700 border-yellow-300 dark:bg-yellow-700/40 dark:text-yellow-200 dark:border-yellow-600'
+            case 'High': return 'bg-red-100 text-red-700 border-red-300 dark:bg-red-700/40 dark:text-red-200 dark:border-red-600'
+            default: return 'bg-gray-100 text-gray-700 border-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600'
+        }
+    }
+
+    const priorityIcon = (priority: string) => {
+        switch (priority) {
+            case 'Low': return <KeyboardDoubleArrowDownIcon />
+            case 'Medium': return <DragHandleIcon />
+            case 'High': return <KeyboardDoubleArrowUpIcon />
+            default: return <DragHandleIcon />
         }
     }
 
     return (
-        <div onClick={openTaskDrawer} className="w-4/5 grid grid-cols-[2fr_1fr_1fr_1.5fr_1.5fr] gap-4 items-center p-4 bg-white border border-gray-200 rounded-lg shadow-sm transition-all duration-300
+        <div onClick={openTaskDrawer} className="w-full grid grid-cols-[2fr_1fr_1fr_1.5fr_1.5fr] gap-4 items-center p-4 bg-white border border-gray-200 rounded-lg shadow-sm transition-all duration-300
                         hover:shadow-lg hover:scale-[1.02] hover:border-blue-200 hover:bg-blue-50
                         dark:bg-gray-900 dark:border-gray-700 dark:hover:shadow-lg dark:hover:shadow-orange-900/20 dark:hover:scale-[1.02] dark:hover:border-orange-600/50 dark:hover:bg-orange-700/10">
             {/* Заголовок */}
             <div className="text-left">
-                <h3 className="text-base font-bold text-gray-900 leading-tight dark:text-white
-                               group-hover:text-blue-700 dark:group-hover:text-blue-300 transition-colors duration-300">
+                <h3 className="text-base font-bold text-gray-900 leading-tight dark:text-white group-hover:text-blue-700 dark:group-hover:text-blue-300 transition-colors duration-300">
                     {title}
                 </h3>
             </div>
 
             {/* Приоритет */}
             <div className="flex justify-center">
-                <span className={`px-3 py-1 rounded-full text-xs font-medium border transition-all duration-300
-                                group-hover:scale-105 ${priorityStyles(priority)}`}>
-                    {priority}
+                <span className={`px-1 py-1 rounded-full text-xs font-medium border transition-all duration-300 group-hover:scale-105 ${priorityStyles(priority)}`}>
+                    {priorityIcon(priority)}
                 </span>
             </div>
 
@@ -119,10 +125,10 @@ const IssuesItem = (props: IssuesItemProps) => {
 
             {/* Доска */}
             <div className="flex flex-col items-center">
-                <p className="text-xs text-gray-500 font-medium mb-1 dark:text-gray-400
+                {/* <p className="text-xs text-gray-500 font-medium mb-1 dark:text-gray-400
                              group-hover:text-blue-600 dark:group-hover:text-blue-300 transition-colors duration-300">
                     Доска
-                </p>
+                </p> */}
                 <p className="text-sm font-medium text-gray-900 dark:text-gray-300 text-center
                              group-hover:text-blue-700 dark:group-hover:text-blue-300 transition-colors duration-300">
                     {boardName}
@@ -131,7 +137,7 @@ const IssuesItem = (props: IssuesItemProps) => {
 
             {/* Ответственный */}
              <div className="flex flex-col items-center">
-                <p className="text-xs text-gray-500 font-medium mb-1 dark:text-gray-400">Ответственный</p>
+                {/* <p className="text-xs text-gray-500 font-medium mb-1 dark:text-gray-400">Ответственный</p> */}
                 <div className="flex items-center gap-2">
                     <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center dark:bg-orange-600">
                         <span className="text-xs font-medium text-white">

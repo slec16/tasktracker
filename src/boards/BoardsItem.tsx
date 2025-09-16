@@ -11,7 +11,7 @@ const BoardsItem = (props: BoardsItemProps) => {
 
     return (
         <Link to={`/board/${id}`}>
-            <div className="w-4/5 grid grid-cols-[2fr_2fr_1fr] gap-4 items-center p-4 bg-white border border-gray-200 rounded-lg shadow-sm transition-all duration-300
+            <div className="w-full grid grid-cols-[2fr_2fr_1fr] gap-4 items-center p-4 bg-white border border-gray-200 rounded-lg shadow-sm transition-all duration-300
                         hover:shadow-lg hover:scale-[1.02] hover:border-blue-200 hover:bg-blue-50
                         dark:bg-gray-900 dark:border-gray-700 dark:hover:shadow-lg dark:hover:shadow-orange-900/20 dark:hover:scale-[1.02] dark:hover:border-orange-600/50 dark:hover:bg-orange-700/10">
                 {/* Заголовок */}
@@ -33,14 +33,11 @@ const BoardsItem = (props: BoardsItemProps) => {
                 </div>
 
                 {/* Ответственный */}
-                <div className="flex flex-row items-center">
-                    <p className="text-sm font-medium text-gray-900 dark:text-gray-300 mr-2">Всего задач</p>
-                    <div className="flex items-center gap-2">
-                        <div className="w-6 h-6  rounded-full flex items-center justify-center bg-blue-500 dark:bg-orange-600">
-                            <span className="text-xs font-medium text-white">
-                                {taskCount}
-                            </span>
-                        </div>
+                <div className="flex flex-row w-full justify-center">
+                    <div className="w-6 h-6 rounded-full flex items-center justify-center bg-blue-500 dark:bg-orange-600">
+                        <span className="text-xs font-medium text-white">
+                            {taskCount}
+                        </span>
                     </div>
                 </div>
             </div>
