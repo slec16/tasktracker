@@ -25,7 +25,7 @@ const BoardsItem = (props: BoardsItemProps) => {
 
                 {/* Доска */}
                 <div className="flex flex-col items-center">
-                    <p className="text-xs text-gray-500 font-medium mb-1 dark:text-gray-400
+                    <p className="text-xs text-gray-500 font-medium dark:text-gray-400
                              group-hover:text-blue-600 dark:group-hover:text-blue-300 transition-colors duration-300">
                         {description}
                     </p>
