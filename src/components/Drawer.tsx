@@ -28,7 +28,7 @@ const DrawerContent = ({ drawerState, onCloseDrawer }: { drawerState: boolean, o
 
 
     return (
-        <div className='flex flex-col px-3 pt-3 pb-10 gap-y-4 h-full'>
+        <div className='flex flex-col px-3 pt-3 pb-10 gap-y-4 h-full dark:bg-gray-900'>
             <div className='flex flex-row justify-between items-center'>
                 <p className='text-2xl font-bold mr-2'>Создание/редактирование задачи</p>
                 <IconButton onClick={onCloseDrawer}><CloseIcon color='secondary' /></IconButton>

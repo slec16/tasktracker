@@ -30,7 +30,7 @@ export const boardApi = {
     },
 
     //Возвращает все задачи, принадлежащие указанной доске
-    getBoard: async (id: number): Promise<BoardTasks[]> => {
+    getBoard: async (id: number): Promise<{data: BoardTasks[]}> => {
         const response = await fetch(`${baseUrl}/api/v1/boards/${id}`)
         if (!response.ok) throw new Error('Failed to fetch board task')
         return response.json()
