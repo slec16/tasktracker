@@ -12,10 +12,17 @@ import {
     QueryClient,
     QueryClientProvider,
 } from '@tanstack/react-query'
+import { type Task } from './api/taskApi';
+
 
 function App() {
 
-    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+    const [isDrawerOpen, setIsDrawerOpen] = useState(false)
+    const [drawerData, setDrawerData] = useState<Task | undefined>(undefined)
+
+    const getDrawerData = (taskData: Task) => {
+        setDrawerData(taskData)
+    }
 
 
     const queryClient = new QueryClient()
@@ -30,13 +37,14 @@ function App() {
                         <Routes>
                             <Route path="/" element={<Navigate to="/issues" replace />} />
                             <Route path='/boards' element={<Boards />} />
-                            <Route path='/issues' element={<Issues openTaskDrawer={() => setIsDrawerOpen(true)}/>} />
-                            <Route path='/board/:id' element={<Board />} />
+                            <Route path='/issues' element={<Issues openTaskDrawer={() => setIsDrawerOpen(true)} getDrawerData={getDrawerData}/>} />
+                            <Route path='/board/:id' element={<Board openTaskDrawer={() => setIsDrawerOpen(true)}/>} />
                         </Routes>
                     </div>
                     <TaskDrawer
                         drawerState={isDrawerOpen}
                         onCloseDrawer={() => setIsDrawerOpen(false)}
+                        drawerData={drawerData}
                     />
                 </div>
             </ThemeProvider>

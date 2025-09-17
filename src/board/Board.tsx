@@ -4,7 +4,7 @@ import { useBoard } from "../hooks/useBoards"
 import LoadingSpinner from "../components/LoadingSpinner"
 
 
-const Board = () => {
+const Board = ({openTaskDrawer}: {openTaskDrawer: () => void}) => {
 
     const { id } = useParams()
     const { data: boardTasks, isLoading, isError, error, refetch } = useBoard(Number(id))
@@ -17,6 +17,7 @@ const Board = () => {
             {boardTasks && <BoardTable 
                 boardTasks={boardTasks.data}
                 onRefresh={refetch}
+                openTaskDrawer={openTaskDrawer}
             />}
         </div>
     )

@@ -38,11 +38,12 @@ export function Draggable(props: { id: string, status: string, children: ReactNo
 
 type BoardTableCardProps = {
     task: BoardTasks
+    openTaskDrawer: () => void
 }
 
 const BoardTableCard = (props: BoardTableCardProps) => {
 
-    const { task } = props
+    const { task, openTaskDrawer } = props
 
     const priorityStyles = (priority: string) => {
         switch (priority) {
@@ -65,6 +66,7 @@ const BoardTableCard = (props: BoardTableCardProps) => {
     return (
         <Draggable id={`${task.id}`} status={`${task.status}`}>
             <div
+                onClick={openTaskDrawer}
                 key={task.id}
                 className="bg-gray-50 dark:bg-gray-700/60 p-3 rounded-lg border border-gray-200 dark:border-gray-600 cursor-pointer hover:shadow-md"
             >
