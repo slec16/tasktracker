@@ -8,7 +8,7 @@ type BoardsListProps = {
 const BoardsList = (props: BoardsListProps) => {
 
     const { boardsList } = props
-    console.log(boardsList)
+    
     return (
         <div className="flex flex-col gap-y-3 px-10">
             <div className="w-full py-4 px-6 rounded-lg bg-gradient-to-r from-gray-50 to-gray-100 border border-gray-200 

@@ -7,7 +7,6 @@ const Issues = ({openTaskDrawer}: {openTaskDrawer: () => void}) => {
 
     const { data: tasks, isLoading, isError, error } = useTasks()
 
-    console.log(tasks?.data)
 
 
     if (isLoading) return <div className="items-center flex justify-center"><LoadingSpinner /></div>

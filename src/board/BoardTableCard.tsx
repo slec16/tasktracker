@@ -2,6 +2,30 @@ import { type BoardTasks } from "../api/boardApi"
 import DragHandleIcon from '@mui/icons-material/DragHandle'
 import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrowDown'
 import KeyboardDoubleArrowUpIcon from '@mui/icons-material/KeyboardDoubleArrowUp'
+import { useDraggable } from '@dnd-kit/core'
+import type { ReactNode } from "react"
+
+
+
+export function Draggable(props: {id:string, status: string, children: ReactNode}) {
+    const { attributes, listeners, setNodeRef, transform } = useDraggable({
+        id: props.id,
+        data: {
+            index: props.id,
+            status: props.status
+        },
+    });
+    const style = transform ? {
+        transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
+    } : undefined;
+
+
+    return (
+        <div ref={setNodeRef} style={style} {...listeners} {...attributes}>
+            {props.children}
+        </div>
+    );
+}
 
 type BoardTableCardProps = {
     task: BoardTasks
@@ -22,34 +46,36 @@ const BoardTableCard = (props: BoardTableCardProps) => {
 
     const priorityIcon = (priority: string) => {
         switch (priority) {
-            case 'Low': return <KeyboardDoubleArrowDownIcon fontSize="small"/>
-            case 'Medium': return <DragHandleIcon fontSize="small"/>
-            case 'High': return <KeyboardDoubleArrowUpIcon fontSize="small"/>
-            default: return <DragHandleIcon fontSize="small"/>
+            case 'Low': return <KeyboardDoubleArrowDownIcon fontSize="small" />
+            case 'Medium': return <DragHandleIcon fontSize="small" />
+            case 'High': return <KeyboardDoubleArrowUpIcon fontSize="small" />
+            default: return <DragHandleIcon fontSize="small" />
         }
     }
 
     return (
-        <div
-            key={task.id}
-            className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg border border-gray-200 dark:border-gray-600 cursor-pointer hover:shadow-md transition-shadow duration-200"
-        >
-            <h3 className="font-medium text-gray-900 dark:text-white text-sm mb-2 line-clamp-2">
-                {task.title}
-            </h3>
-            <div className="flex items-center justify-between">
-                <div className="flex justify-center">
-                    <span className={`px-1 py-1 rounded-full text-xs font-medium border transition-all duration-300 group-hover:scale-105 ${priorityStyles(task.priority)}`}>
-                        {priorityIcon(task.priority)}
-                    </span>
-                </div>
-                <div className="w-6 h-6 bg-blue-500 dark:bg-orange-600 rounded-full flex items-center justify-center">
-                    <span className="text-xs text-white font-medium">
-                        {task.assignee.fullName.split(' ').map(n => n[0]).join('')}
-                    </span>
+        <Draggable id={`${task.id}`} status={`${task.status}`}>
+            <div
+                key={task.id}
+                className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg border border-gray-200 dark:border-gray-600 cursor-pointer hover:shadow-md transition-shadow duration-200"
+            >
+                <h3 className="font-medium text-gray-900 dark:text-white text-sm mb-2 line-clamp-2">
+                    {task.title}
+                </h3>
+                <div className="flex items-center justify-between">
+                    <div className="flex justify-center">
+                        <span className={`px-1 py-1 rounded-full text-xs font-medium border transition-all duration-300 group-hover:scale-105 ${priorityStyles(task.priority)}`}>
+                            {priorityIcon(task.priority)}
+                        </span>
+                    </div>
+                    <div className="w-6 h-6 bg-blue-500 dark:bg-orange-600 rounded-full flex items-center justify-center">
+                        <span className="text-xs text-white font-medium">
+                            {task.assignee.fullName.split(' ').map(n => n[0]).join('')}
+                        </span>
+                    </div>
                 </div>
             </div>
-        </div>
+        </Draggable>
     )
 }
 
