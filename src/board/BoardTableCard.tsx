@@ -2,29 +2,38 @@ import { type BoardTasks } from "../api/boardApi"
 import DragHandleIcon from '@mui/icons-material/DragHandle'
 import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrowDown'
 import KeyboardDoubleArrowUpIcon from '@mui/icons-material/KeyboardDoubleArrowUp'
-import { useDraggable } from '@dnd-kit/core'
+import { useDraggable, useDndContext } from '@dnd-kit/core'
 import type { ReactNode } from "react"
 
-
-
-export function Draggable(props: {id:string, status: string, children: ReactNode}) {
+export function Draggable(props: { id: string, status: string, children: ReactNode }) {
     const { attributes, listeners, setNodeRef, transform } = useDraggable({
         id: props.id,
         data: {
             index: props.id,
             status: props.status
         },
-    });
-    const style = transform ? {
-        transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
-    } : undefined;
+    })
 
+    const { active } = useDndContext()
+    const isActive = active?.id === props.id
+
+    const style = {
+        transform: transform 
+            ? `translate3d(${transform.x}px, ${transform.y}px, 0)`
+            : undefined,
+        scale: isActive ? '1.05' : '1',
+        transition: 'scale 0.2s ease',
+        zIndex: isActive ? 10 : 1,
+        ...(isActive && {
+            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)'
+        })
+    }
 
     return (
         <div ref={setNodeRef} style={style} {...listeners} {...attributes}>
             {props.children}
         </div>
-    );
+    )
 }
 
 type BoardTableCardProps = {
@@ -57,14 +66,14 @@ const BoardTableCard = (props: BoardTableCardProps) => {
         <Draggable id={`${task.id}`} status={`${task.status}`}>
             <div
                 key={task.id}
-                className="bg-gray-50 dark:bg-gray-700/60 p-3 rounded-lg border border-gray-200 dark:border-gray-600 cursor-pointer hover:shadow-md transition-shadow duration-200"
+                className="bg-gray-50 dark:bg-gray-700/60 p-3 rounded-lg border border-gray-200 dark:border-gray-600 cursor-pointer hover:shadow-md"
             >
                 <h3 className="font-medium text-gray-900 dark:text-white text-sm mb-2 line-clamp-2">
                     {task.title}
                 </h3>
                 <div className="flex items-center justify-between">
                     <div className="flex justify-center">
-                        <span className={`px-1 py-1 rounded-full text-xs font-medium border transition-all duration-300 group-hover:scale-105 ${priorityStyles(task.priority)}`}>
+                        <span className={`px-1 py-1 rounded-full text-xs font-medium border ${priorityStyles(task.priority)}`}>
                             {priorityIcon(task.priority)}
                         </span>
                     </div>

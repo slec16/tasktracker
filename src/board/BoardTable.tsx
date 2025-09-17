@@ -14,36 +14,30 @@ type BoardTableType = {
 const BoardTable = (props: BoardTableType) => {
 
     const { boardTasks, onRefresh } = props
-    const { data: response, mutate } = useUpdateTaskStatus()
-    // const sensor = useSensor(MouseSensor, {
-    //   // Press delay of 250ms, with tolerance of 5px of movement
-    //   activationConstraint: {
-    //     delay: 500,
-    //     distance: 10,
-    //   },
-    // })
+    const { mutate } = useUpdateTaskStatus()
 
-const pointerSensor = useSensor(PointerSensor, {
-  activationConstraint: {
-    delay: 500,
-    distance: 10,
-  },
-});
 
-const touchSensor = useSensor(TouchSensor, {
-  activationConstraint: {
-    delay: 500,
-    distance: 10,
-  },
-});
+    const pointerSensor = useSensor(PointerSensor, {
+        activationConstraint: {
+            delay: 200,
+            tolerance: 10
+        },
+    })
 
-const keyboardSensor = useSensor(KeyboardSensor);
+    const touchSensor = useSensor(TouchSensor, {
+        activationConstraint: {
+            delay: 200,
+            tolerance: 10
+        },
+    })
 
-const sensors = useSensors(
-  pointerSensor,
-  touchSensor,
-  keyboardSensor
-);
+    const keyboardSensor = useSensor(KeyboardSensor);
+
+    const sensors = useSensors(
+        pointerSensor,
+        touchSensor,
+        keyboardSensor
+    );
 
     const [openSuccessSnackbar, setOpenSuccessSnackbar] = useState(false)
     const [openErrorSnackbar, setOpenErrorSnackbar] = useState(false)
@@ -72,7 +66,6 @@ const sensors = useSensors(
         })
     }, [props])
 
-    // TODO - перенос карточки в свою же колонку
 
     function handleDragEnd(event: DragEndEvent) {
         const { over, active } = event  // over - куда, active - кого
@@ -91,8 +84,6 @@ const sensors = useSensors(
                                 }
                             }, {
                             onSuccess: () => {
-                                // setInProgressTasks(prev => prev.filter(task => task.id != active.id))
-                                // taskFromProgress && setBacklogTasks((prev) => [...prev, taskFromProgress])
                                 setOpenSuccessSnackbar(true)
                                 onRefresh()
                             },
@@ -111,8 +102,6 @@ const sensors = useSensors(
                             }
                         }, {
                             onSuccess: () => {
-                                // setDoneTasks(prev => prev.filter(task => task.id != active.id))
-                                // taskFromDone && setBacklogTasks((prev) => [...prev, taskFromDone])
                                 setOpenSuccessSnackbar(true)
                                 onRefresh()
                             },
@@ -135,8 +124,6 @@ const sensors = useSensors(
                             }
                         }, {
                             onSuccess: () => {
-                                // setBacklogTasks(prev => prev.filter(task => task.id != active.id))
-                                // taskFromBacklog && setInProgressTasks((prev) => [...prev, taskFromBacklog])
                                 setOpenSuccessSnackbar(true)
                                 onRefresh()
                             },
@@ -155,8 +142,6 @@ const sensors = useSensors(
                             }
                         }, {
                             onSuccess: () => {
-                                // setDoneTasks(prev => prev.filter(task => task.id != active.id))
-                                // taskFromDone && setInProgressTasks((prev) => [...prev, taskFromDone])
                                 setOpenSuccessSnackbar(true)
                                 onRefresh()
                             },
@@ -179,8 +164,6 @@ const sensors = useSensors(
                             }
                         }, {
                             onSuccess: () => {
-                                // setBacklogTasks(prev => prev.filter(task => task.id != active.id))
-                                // taskFromBacklog && setDoneTasks((prev) => [...prev, taskFromBacklog])
                                 setOpenSuccessSnackbar(true)
                                 onRefresh()
                             },
@@ -199,8 +182,6 @@ const sensors = useSensors(
                             }
                         }, {
                             onSuccess: () => {
-                                // setInProgressTasks(prev => prev.filter(task => task.id != active.id))
-                                // taskFromProgress && setDoneTasks((prev) => [...prev, taskFromProgress])
                                 setOpenSuccessSnackbar(true)
                                 onRefresh()
                             },
