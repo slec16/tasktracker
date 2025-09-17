@@ -7,7 +7,7 @@ import LoadingSpinner from "../components/LoadingSpinner"
 const Board = () => {
 
     const { id } = useParams()
-    const { data: boardTasks, isLoading, isError, error } = useBoard(Number(id))
+    const { data: boardTasks, isLoading, isError, error, refetch } = useBoard(Number(id))
 
 
     if (isLoading) return <div className="items-center flex justify-center"><LoadingSpinner /></div>
@@ -16,6 +16,7 @@ const Board = () => {
         <div className="">
             {boardTasks && <BoardTable 
                 boardTasks={boardTasks.data}
+                onRefresh={refetch}
             />}
         </div>
     )

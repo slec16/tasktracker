@@ -66,13 +66,14 @@ export const taskApi = {
         return response.json();
     },
 
-    updateTaskStatus: async (id: number, taskStatus: {status: string}): Promise<{message: string}> => {
+    updateTaskStatus: async (id: number, taskStatus: {status: string}): Promise<{data: {message: string}}> => {
         const response = await fetch(`${baseUrl}/api/v1/tasks/updateStatus/${id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(taskStatus),
         });
         if (!response.ok) throw new Error('Failed to update task');
+        // console.log(await response.json())
         return response.json();
     },
 

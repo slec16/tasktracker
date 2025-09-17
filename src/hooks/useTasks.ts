@@ -61,14 +61,14 @@ export const useUpdateTask = (id: number) => {
 }
 
 // Хук для обновления статуса задачи
-export const useUpdateTaskStatus = (id: number) => {
+export const useUpdateTaskStatus = () => {
     const queryClient = useQueryClient()
 
     return useMutation({
         mutationFn: ({ id, taskStatus }: { id: number; taskStatus: {status: string} }) => taskApi.updateTaskStatus(id, taskStatus),
         onSuccess: (updatedUser) => {
             // Обновляем конкретную задачу в кэше
-            queryClient.setQueryData(taskKeys.detail(id), updatedUser);
+            // queryClient.setQueryData(taskKeys.detail(id), updatedUser);
             // Инвалидируем список задач
             queryClient.invalidateQueries({ queryKey: taskKeys.lists() });
         },

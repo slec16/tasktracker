@@ -57,7 +57,7 @@ const BoardTableCard = (props: BoardTableCardProps) => {
         <Draggable id={`${task.id}`} status={`${task.status}`}>
             <div
                 key={task.id}
-                className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg border border-gray-200 dark:border-gray-600 cursor-pointer hover:shadow-md transition-shadow duration-200"
+                className="bg-gray-50 dark:bg-gray-700/60 p-3 rounded-lg border border-gray-200 dark:border-gray-600 cursor-pointer hover:shadow-md transition-shadow duration-200"
             >
                 <h3 className="font-medium text-gray-900 dark:text-white text-sm mb-2 line-clamp-2">
                     {task.title}
