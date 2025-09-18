@@ -1,4 +1,4 @@
-// import { useState } from 'react'
+import { useState } from 'react'
 import { Button, IconButton } from '@mui/material'
 import Drawer from '@mui/material/Drawer'
 import CloseIcon from '@mui/icons-material/Close'
@@ -7,15 +7,28 @@ import Divider from '@mui/material/Divider'
 import MenuItem from '@mui/material/MenuItem'
 import { useNavigate } from 'react-router-dom'
 import { useBoards } from "../hooks/useBoards"
+import { useTask } from '../hooks/useTasks'
+import { type Task } from '../api/taskApi'
+import LoadingSpinner from "../components/LoadingSpinner"
 
 
-const DrawerContent = ({ onCloseDrawer, drawerData }: { onCloseDrawer: () => void, drawerData: any }) => {
+
+const DrawerContent = ({ onCloseDrawer, drawerData }: { onCloseDrawer: () => void, drawerData: Task }) => {
 
     const navigate = useNavigate()
     const { data: boards, isLoading, isError, error } = useBoards()
+    const { id, title, description, priority, status, boardId, assignee, boardName } = drawerData
+
+    const [titleValue, setTitleValue] = useState(title)
+    const [descriptionValue, setDescriptionValue] = useState(description)
+    const [priorityValue, setPriorityValue] = useState(priority)
+    const [statusValue, setStatusValue] = useState(status)
+    const [assigneeValue, setAssigneeValue] = useState(assignee)
+    const [boardNameValue, setBoardNameValue] = useState(boardName)
 
 
-    const priority = [
+
+    const priorityOptions = [
         {
             value: 'Low',
             label: 'Низкий',
@@ -30,7 +43,7 @@ const DrawerContent = ({ onCloseDrawer, drawerData }: { onCloseDrawer: () => voi
         }
     ]
 
-    const status = [
+    const statusOptions = [
         {
             value: 'Backlog',
             label: 'Бэклог',
@@ -55,21 +68,24 @@ const DrawerContent = ({ onCloseDrawer, drawerData }: { onCloseDrawer: () => voi
             <TextField
                 label="Название"
                 variant="standard"
-                value={drawerData.title}
+                value={titleValue}
+                onChange={(e) => setTitleValue(e.target.value)}
             />
             <TextField
                 label="Описание"
                 multiline
                 minRows={4}
                 maxRows={10}
-                value={drawerData.description}
+                value={descriptionValue}
+                onChange={(e) => setDescriptionValue(e.target.value)}
             />
             <Divider />
             {/* Запрос всех проектов */}
             {boards && <TextField
                 select
                 label="Проект"
-                value={drawerData.boardName}
+                value={boardNameValue}
+            // onChange={(e) => setBoardNameValue(e.target.value)}
             >
                 {boards.data.map((option) => (
                     <MenuItem key={option.id} value={option.name}>
@@ -80,10 +96,10 @@ const DrawerContent = ({ onCloseDrawer, drawerData }: { onCloseDrawer: () => voi
             <TextField
                 select
                 label="Приоритет"
-                onChange={(e) => console.log(e.target)}
-                value={drawerData.priority}
+                value={priorityValue}
+                onChange={(e) => setPriorityValue(e.target.value)}
             >
-                {priority.map((option) => (
+                {priorityOptions.map((option) => (
                     <MenuItem key={option.value} value={option.value}>
                         {option.label}
                     </MenuItem>
@@ -92,9 +108,10 @@ const DrawerContent = ({ onCloseDrawer, drawerData }: { onCloseDrawer: () => voi
             <TextField
                 select
                 label="Статус"
-                value={drawerData.status}
+                value={statusValue}
+                onChange={(e) => setStatusValue(e.target.value)}
             >
-                {status.map((option) => (
+                {statusOptions.map((option) => (
                     <MenuItem key={option.value} value={option.value}>
                         {option.label}
                     </MenuItem>
@@ -102,7 +119,7 @@ const DrawerContent = ({ onCloseDrawer, drawerData }: { onCloseDrawer: () => voi
             </TextField>
             <TextField
                 label="Исполнитель"
-                value={drawerData.assignee.fullName}
+                value={assigneeValue.fullName}
             />
             <div className='flex flex-row justify-between items-center mt-auto'>
                 <Button
@@ -124,7 +141,13 @@ const DrawerContent = ({ onCloseDrawer, drawerData }: { onCloseDrawer: () => voi
 
 const TaskDrawer = ({ drawerState, onCloseDrawer, drawerData }: { drawerState: boolean, onCloseDrawer: () => void, drawerData: any }) => {
 
-    console.log(drawerData)
+    // console.log(drawerData)
+    const { data: task, isLoading, isError, error } = useTask(drawerData.id)
+
+    console.log(task?.data)
+
+    if (isLoading) return <div className="items-center flex justify-center"><LoadingSpinner /></div>
+    if (isError) return <div>Ошибка: {error.message}</div>
     return (
         <Drawer
             open={drawerState}
@@ -133,15 +156,14 @@ const TaskDrawer = ({ drawerState, onCloseDrawer, drawerData }: { drawerState: b
             sx={{
                 '& .MuiDrawer-paper': {
                     width: '25vw', // 25% от ширины viewport
-                    // maxWidth: '400px', // опционально: максимальная ширина
                 }
             }}
         >
-            <DrawerContent
+            {task && <DrawerContent
                 onCloseDrawer={onCloseDrawer}
-                drawerData={drawerData}
-            />
-        </Drawer>
+                drawerData={task.data}
+            />}
+        </Drawer >
     )
 }
 

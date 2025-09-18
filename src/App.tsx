@@ -41,11 +41,11 @@ function App() {
                             <Route path='/board/:id' element={<Board openTaskDrawer={() => setIsDrawerOpen(true)}/>} />
                         </Routes>
                     </div>
-                    <TaskDrawer
+                    {drawerData && <TaskDrawer
                         drawerState={isDrawerOpen}
                         onCloseDrawer={() => setIsDrawerOpen(false)}
                         drawerData={drawerData}
-                    />
+                    />}
                 </div>
             </ThemeProvider>
         </QueryClientProvider>

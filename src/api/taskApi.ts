@@ -40,7 +40,7 @@ export const taskApi = {
         return response.json();
     },
 
-    getTask: async (id: number): Promise<Task> => {
+    getTask: async (id: number): Promise<{data: Task}> => {
         const response = await fetch(`${baseUrl}/api/v1/tasks/${id}`)
         if (!response.ok) throw new Error('Failed to fetch task')
         return response.json()
