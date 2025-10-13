@@ -10,20 +10,25 @@ import { useBoards } from "../hooks/useBoards"
 import { useTask } from '../hooks/useTasks'
 import { type Task } from '../api/taskApi'
 import LoadingSpinner from "../components/LoadingSpinner"
-
+import InputAdornment from '@mui/material/InputAdornment'
+import AccountCircle from '@mui/icons-material/AccountCircle'
+import { useUpdateTask } from '../hooks/useTasks'
 import { useAppSelector, useAppDispatch } from '../hooks/redux'
 import { closeDrawer } from '../store/drawerSlice'
 
 
 
-const DrawerContent = ({ onCloseDrawer, drawerId }: { onCloseDrawer: () => void, drawerId: string }) => {
+const DrawerContent = ({ onCloseDrawer, drawerData, onRefresh }: { onCloseDrawer: () => void, drawerData: any, onRefresh: () => void }) => {
+
+    const { id, title, description, priority, status, boardId, assignee, boardName } = drawerData
 
     const navigate = useNavigate()
+    const { mutate, isPending: isMutating } = useUpdateTask(id)
 
-    const { data: task, isLoading: isLoadingTask, isError: isErrorTask, error: errorTask } = useTask(Number(drawerId))
     const { data: boards, isLoading, isError, error } = useBoards()
 
-    const { id, title, description, priority, status, boardId, assignee, boardName } = task?.data || {}
+
+    console.log(drawerData)
 
     const [titleValue, setTitleValue] = useState(title)
     const [descriptionValue, setDescriptionValue] = useState(description)
@@ -32,7 +37,14 @@ const DrawerContent = ({ onCloseDrawer, drawerId }: { onCloseDrawer: () => void,
     const [assigneeValue, setAssigneeValue] = useState(assignee)
     const [boardNameValue, setBoardNameValue] = useState(boardName)
 
-
+    useEffect(() => {
+        setTitleValue(title)
+        setDescriptionValue(description)
+        setPriorityValue(priority)
+        setStatusValue(status)
+        setAssigneeValue(assignee)
+        setBoardNameValue(boardName)
+    }, [title, description, priority, status, assignee, boardName])
 
     const priorityOptions = [
         {
@@ -64,18 +76,56 @@ const DrawerContent = ({ onCloseDrawer, drawerId }: { onCloseDrawer: () => void,
         }
     ];
 
+    const updateTaskHandler = () => {
+
+        const newTask = {
+            title: titleValue,
+            description: descriptionValue,
+            priority: priorityValue,
+            status: statusValue,
+            assigneeId: assignee.id
+        }
+        mutate(
+            {
+                id: id,
+                taskData: newTask
+            }, {
+            onSuccess: () => {
+                // setOpenSuccessSnackbar(true)
+                onRefresh()
+            }}
+        )
+    }
 
     return (
-        <div className='flex flex-col w-full px-5 pt-3 pb-10 gap-y-4 h-full dark:bg-gray-900'>
+        <div className='flex flex-col w-full px-5 pt-3 pb-10 gap-y-4 h-full dark:bg-gray-900 relative'>
+            
+            {/* Заглушка во время мутации */}
+            {isMutating && (
+                <div className="absolute inset-0 bg-white bg-opacity-70 flex items-center justify-center z-10 rounded-lg dark:bg-gray-900 dark:bg-opacity-70">
+                    <div className="flex flex-col items-center">
+                        {/* <CircularProgress /> */}
+                        <p className="mt-2 text-gray-600 dark:text-gray-300">Сохранение изменений...</p>
+                    </div>
+                </div>
+            )}
+            
             <div className='flex flex-row justify-between items-center'>
-                <p className='text-2xl font-bold mr-2'>Редактирование задачи</p>
-                <IconButton onClick={onCloseDrawer}><CloseIcon color='secondary' /></IconButton>
+                <p className='text-2xl font-bold mr-2'>{id == undefined ? 'Создание задачи' : 'Редактирование задачи'}</p>
+                <IconButton 
+                    onClick={onCloseDrawer}
+                    disabled={isMutating}
+                >
+                    <CloseIcon color='secondary' />
+                </IconButton>
             </div>
+            
             <TextField
                 label="Название"
                 variant="standard"
                 value={titleValue}
                 onChange={(e) => setTitleValue(e.target.value)}
+                disabled={isMutating}
             />
             <TextField
                 label="Описание"
@@ -84,26 +134,32 @@ const DrawerContent = ({ onCloseDrawer, drawerId }: { onCloseDrawer: () => void,
                 maxRows={10}
                 value={descriptionValue}
                 onChange={(e) => setDescriptionValue(e.target.value)}
+                disabled={isMutating}
             />
             <Divider />
-            {/* Запрос всех проектов */}
-            {boards && <TextField
-                select
-                label="Проект"
-                value={boardNameValue}
-            // onChange={(e) => setBoardNameValue(e.target.value)}
-            >
-                {boards.data.map((option) => (
-                    <MenuItem key={option.id} value={option.name}>
-                        {option.name}
-                    </MenuItem>
-                ))}
-            </TextField>}
+
+            {boards && (
+                <TextField
+                    select
+                    label="Проект"
+                    value={boardNameValue || ''}
+                    onChange={(e) => setBoardNameValue(e.target.value)}
+                    disabled={isMutating}
+                >
+                    {boards.data.map((option) => (
+                        <MenuItem key={option.id} value={option.name}>
+                            {option.name}
+                        </MenuItem>
+                    ))}
+                </TextField>
+            )}
+            
             <TextField
                 select
                 label="Приоритет"
-                value={priorityValue}
+                value={priorityValue || ''}
                 onChange={(e) => setPriorityValue(e.target.value)}
+                disabled={isMutating}
             >
                 {priorityOptions.map((option) => (
                     <MenuItem key={option.value} value={option.value}>
@@ -111,11 +167,13 @@ const DrawerContent = ({ onCloseDrawer, drawerId }: { onCloseDrawer: () => void,
                     </MenuItem>
                 ))}
             </TextField>
+            
             <TextField
                 select
                 label="Статус"
-                value={statusValue}
+                value={statusValue || ''}
                 onChange={(e) => setStatusValue(e.target.value)}
+                disabled={isMutating}
             >
                 {statusOptions.map((option) => (
                     <MenuItem key={option.value} value={option.value}>
@@ -123,40 +181,62 @@ const DrawerContent = ({ onCloseDrawer, drawerId }: { onCloseDrawer: () => void,
                     </MenuItem>
                 ))}
             </TextField>
-            <TextField
-                label="Исполнитель"
-                value={assigneeValue.fullName}
-            />
+
             <div className='flex flex-row justify-between items-center mt-auto'>
                 <Button
                     variant="contained"
-                    onClick={() => {
-                        navigate(`/board/${drawerData.boardId}`)
-                        onCloseDrawer()
-                    }}
+                    onClick={onCloseDrawer}
+                    disabled={isMutating}
                 >
                     Перейти на доску
                 </Button>
-                <Button variant="contained" disabled>Создать/Реадактировать</Button>
+                
+                <Button 
+                    variant="contained" 
+                    onClick={updateTaskHandler}
+                    disabled={isMutating}
+                    // startIcon={isMutating ? <CircularProgress size={16} /> : null}
+                >
+                    {isMutating ? 'Сохранение...' : (id == undefined ? 'Создать' : 'Редактировать')}
+                </Button>
             </div>
         </div>
     )
+
 }
 
 
-
-// const TaskDrawer = ({ drawerState, onCloseDrawer }: { drawerState: boolean, onCloseDrawer: () => void }) => {
 const TaskDrawer = () => {
-
-
-    // console.log(drawerData)
-
 
     const { isOpen, drawerId } = useAppSelector((state) => state.drawer)
     const dispatch = useAppDispatch()
 
+    const { data: task, isLoading, isError, error, refetch } = useTask(Number(drawerId))
+
+    // console.log(task?.data)
+
+    // useEffect(() => {
+    //     console.log(isLoading)
+    // }, [isLoading])
+
     const handleClose = () => {
         dispatch(closeDrawer())
+    }
+
+    const emptyTask = {
+        id: undefined,
+        title: '',
+        description: '',
+        priority: '',
+        status: '',
+        boardId: undefined,
+        assignee: {
+            id: undefined,
+            fullName: '',
+            email: '',
+            avatarUrl: ''
+        },
+        boardName: ''
     }
 
     // if (isLoading) return <div className="items-center flex justify-center"><LoadingSpinner /></div>
@@ -169,11 +249,15 @@ const TaskDrawer = () => {
             anchor='right'
             sx={{
                 '& .MuiDrawer-paper': {
-                    width: '25vw', // 25% от ширины viewport
+                    width: '33vw', // 33% от ширины viewport
                 }
             }}
         >
-            {}
+            <DrawerContent
+                onCloseDrawer={handleClose}
+                drawerData={task ? task.data : emptyTask}
+                onRefresh={refetch}
+            />
         </Drawer >
     )
 }

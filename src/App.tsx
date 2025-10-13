@@ -48,10 +48,6 @@ function App() {
                             </Routes>
                         </div>
                         <TaskDrawer />
-                            {/* drawerState={isDrawerOpen}
-                            onCloseDrawer={() => setIsDrawerOpen(false)}
-                            drawerData={drawerData}
-                        /> */}
                     </div>
                 </ThemeProvider>
             </QueryClientProvider>
