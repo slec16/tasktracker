@@ -6,6 +6,8 @@ import {
     useLocation,
 } from 'react-router'
 import { Button } from '@mui/material'
+import { useAppDispatch } from '../hooks/redux'
+import { openDrawer, closeDrawer, toggleDrawer } from '../store/drawerSlice'
 
 const useRouteMatch = (patterns: readonly string[]) => {
     const { pathname } = useLocation()
@@ -22,16 +24,23 @@ const useRouteMatch = (patterns: readonly string[]) => {
     return null
 }
 
-const TabsRouter = ({openTaskDrawer}: {openTaskDrawer: () => void}) => {
+const TabsRouter = ({ openTaskDrawer }: { openTaskDrawer: () => void }) => {
+
+    const dispatch = useAppDispatch()
+
+    const handleOpenDrawer = () => {
+        dispatch(openDrawer('null'))
+    }
+
     const routeMatch = useRouteMatch(['/issues', '/boards', '/board/:id', '/'])
-    
-    let currentTab = '/issues' 
-    
+
+    let currentTab = '/issues'
+
     if (routeMatch?.pattern?.path) {
         if (routeMatch.pattern.path === '/') {
             currentTab = '/issues'
         } else if (routeMatch.pattern.path === '/board/:id') {
-            currentTab = '/boards' 
+            currentTab = '/boards'
         } else {
             currentTab = routeMatch.pattern.path
         }
@@ -43,7 +52,7 @@ const TabsRouter = ({openTaskDrawer}: {openTaskDrawer: () => void}) => {
                 <Tab label="Все задачи" value="/issues" to="/issues" component={Link} />
                 <Tab label="Проекты" value="/boards" to="/boards" component={Link} />
             </Tabs>
-            <Button size='small' variant="outlined" onClick={openTaskDrawer}>Создать задачу</Button>
+            <Button size='small' variant="outlined" onClick={handleOpenDrawer}>Создать задачу</Button>
         </div>
     )
 }

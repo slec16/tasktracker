@@ -2,6 +2,8 @@ import { type Task } from "../api/taskApi"
 import DragHandleIcon from '@mui/icons-material/DragHandle'
 import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrowDown'
 import KeyboardDoubleArrowUpIcon from '@mui/icons-material/KeyboardDoubleArrowUp'
+import { useAppDispatch } from '../hooks/redux'
+import { openDrawer, closeDrawer, toggleDrawer } from '../store/drawerSlice'
 
 type IssuesItemProps = {
     taskData: Task
@@ -25,18 +27,18 @@ const StatusTimeline = ({ status }: { status: string }) => {
         <div className="flex items-center justify-center space-x-1">
             {/* Точка 1: Backlog */}
             <div className={`w-3 h-3 rounded-full border-2 
-                ${currentIndex !== 0 
-                    ? `${currentIndex == 1 
-                        ? 'bg-blue-500 border-blue-500 dark:bg-blue-600 dark:border-blue-600' 
+                ${currentIndex !== 0
+                    ? `${currentIndex == 1
+                        ? 'bg-blue-500 border-blue-500 dark:bg-blue-600 dark:border-blue-600'
                         : 'bg-green-500 border-green-500 dark:bg-green-600 dark:border-green-600'}`
                     : 'bg-gray-400 border-gray-400 dark:bg-gray-400 dark:border-gray-400'}`}
             />
 
             {/* Линия между точками 1 и 2 */}
             <div className={`w-8 h-0.5 
-                ${currentIndex !== 0 
-                    ? `${currentIndex == 1 
-                        ? 'bg-blue-500 dark:bg-blue-600' 
+                ${currentIndex !== 0
+                    ? `${currentIndex == 1
+                        ? 'bg-blue-500 dark:bg-blue-600'
                         : 'bg-green-500 dark:bg-green-600'}`
                     : 'bg-gray-400 dark:bg-gray-400'}`}
             />
@@ -45,11 +47,11 @@ const StatusTimeline = ({ status }: { status: string }) => {
             <div className="relative inline-flex">
                 {/* Основная точка */}
                 <div className={`w-3 h-3 rounded-full border-2  
-                     ${currentIndex !== 0 
-                         ? `${currentIndex == 1 
-                             ? 'bg-blue-500 border-blue-500 dark:bg-blue-600 dark:border-blue-600' 
-                             : 'bg-green-500 border-green-500 dark:bg-green-600 dark:border-green-600'}`
-                         : 'bg-white border-gray-300 dark:bg-gray-700 dark:border-gray-600'}`}
+                     ${currentIndex !== 0
+                        ? `${currentIndex == 1
+                            ? 'bg-blue-500 border-blue-500 dark:bg-blue-600 dark:border-blue-600'
+                            : 'bg-green-500 border-green-500 dark:bg-green-600 dark:border-green-600'}`
+                        : 'bg-white border-gray-300 dark:bg-gray-700 dark:border-gray-600'}`}
                 />
 
                 {/* Анимированная точка (только для статуса In Progress) */}
@@ -60,15 +62,15 @@ const StatusTimeline = ({ status }: { status: string }) => {
 
             {/* Линия между точками 2 и 3 */}
             <div className={`w-8 h-0.5 
-                ${currentIndex >= 2 
-                    ? 'bg-green-500 dark:bg-green-600' 
-                    : 'bg-gray-300 dark:bg-gray-600'}`} 
+                ${currentIndex >= 2
+                    ? 'bg-green-500 dark:bg-green-600'
+                    : 'bg-gray-300 dark:bg-gray-600'}`}
             />
 
             {/* Точка 3: Done */}
             <div className={`w-3 h-3 rounded-full border-2 
-                ${currentIndex == 2 
-                    ? 'bg-green-500 border-green-500 dark:bg-green-600 dark:border-green-600' 
+                ${currentIndex == 2
+                    ? 'bg-green-500 border-green-500 dark:bg-green-600 dark:border-green-600'
                     : 'bg-white border-gray-300 dark:bg-gray-700 dark:border-gray-600'}`}
             />
         </div>
@@ -77,7 +79,13 @@ const StatusTimeline = ({ status }: { status: string }) => {
 
 const IssuesItem = (props: IssuesItemProps) => {
     const { taskData, openTaskDrawer, getDrawerData } = props
-    const { title, priority, status, boardName, assignee } = taskData
+    const { title, priority, status, boardName, assignee, id } = taskData
+
+    const dispatch = useAppDispatch()
+
+    const handleOpenDrawer = () => {
+        dispatch(openDrawer(`${id}`))
+    }
 
     const priorityStyles = (priority: string) => {
         switch (priority) {
@@ -98,12 +106,12 @@ const IssuesItem = (props: IssuesItemProps) => {
     }
 
     return (
-        <div onClick={() => {
-            openTaskDrawer()
-            getDrawerData(taskData)
-        }}  className="w-full grid grid-cols-[2fr_1fr_1fr_1.5fr_1.5fr] gap-4 items-center p-4 bg-white border border-gray-200 rounded-lg shadow-sm transition-all duration-300
+        <div 
+            onClick={handleOpenDrawer}
+            className="w-full grid grid-cols-[2fr_1fr_1fr_1.5fr_1.5fr] gap-4 items-center p-4 bg-white border border-gray-200 rounded-lg shadow-sm transition-all duration-300
                         hover:shadow-lg hover:scale-[1.02] hover:border-blue-200 hover:bg-blue-50
-                        dark:bg-gray-900 dark:border-gray-700 dark:hover:shadow-lg dark:hover:shadow-orange-900/20 dark:hover:scale-[1.02] dark:hover:border-orange-600/50 dark:hover:bg-orange-700/10">
+                        dark:bg-gray-900 dark:border-gray-700 dark:hover:shadow-lg dark:hover:shadow-orange-900/20 dark:hover:scale-[1.02] dark:hover:border-orange-600/50 dark:hover:bg-orange-700/10"
+        >
             {/* Заголовок */}
             <div className="text-left">
                 <h3 className="text-base font-bold text-gray-900 leading-tight dark:text-white group-hover:text-blue-700 dark:group-hover:text-blue-300 transition-colors duration-300">
@@ -140,7 +148,7 @@ const IssuesItem = (props: IssuesItemProps) => {
             </div>
 
             {/* Ответственный */}
-             <div className="flex flex-col items-center">
+            <div className="flex flex-col items-center">
                 {/* <p className="text-xs text-gray-500 font-medium mb-1 dark:text-gray-400">Ответственный</p> */}
                 <div className="flex items-center gap-2">
                     <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center dark:bg-orange-600">

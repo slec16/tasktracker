@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Button, IconButton } from '@mui/material'
 import Drawer from '@mui/material/Drawer'
 import CloseIcon from '@mui/icons-material/Close'
@@ -11,13 +11,19 @@ import { useTask } from '../hooks/useTasks'
 import { type Task } from '../api/taskApi'
 import LoadingSpinner from "../components/LoadingSpinner"
 
+import { useAppSelector, useAppDispatch } from '../hooks/redux'
+import { closeDrawer } from '../store/drawerSlice'
 
 
-const DrawerContent = ({ onCloseDrawer, drawerData }: { onCloseDrawer: () => void, drawerData: Task }) => {
+
+const DrawerContent = ({ onCloseDrawer, drawerId }: { onCloseDrawer: () => void, drawerId: string }) => {
 
     const navigate = useNavigate()
+
+    const { data: task, isLoading: isLoadingTask, isError: isErrorTask, error: errorTask } = useTask(Number(drawerId))
     const { data: boards, isLoading, isError, error } = useBoards()
-    const { id, title, description, priority, status, boardId, assignee, boardName } = drawerData
+
+    const { id, title, description, priority, status, boardId, assignee, boardName } = task?.data || {}
 
     const [titleValue, setTitleValue] = useState(title)
     const [descriptionValue, setDescriptionValue] = useState(description)
@@ -139,19 +145,27 @@ const DrawerContent = ({ onCloseDrawer, drawerData }: { onCloseDrawer: () => voi
 
 
 
-const TaskDrawer = ({ drawerState, onCloseDrawer, drawerData }: { drawerState: boolean, onCloseDrawer: () => void, drawerData: any }) => {
+// const TaskDrawer = ({ drawerState, onCloseDrawer }: { drawerState: boolean, onCloseDrawer: () => void }) => {
+const TaskDrawer = () => {
+
 
     // console.log(drawerData)
-    const { data: task, isLoading, isError, error } = useTask(drawerData.id)
 
-    console.log(task?.data)
 
-    if (isLoading) return <div className="items-center flex justify-center"><LoadingSpinner /></div>
-    if (isError) return <div>Ошибка: {error.message}</div>
+    const { isOpen, drawerId } = useAppSelector((state) => state.drawer)
+    const dispatch = useAppDispatch()
+
+    const handleClose = () => {
+        dispatch(closeDrawer())
+    }
+
+    // if (isLoading) return <div className="items-center flex justify-center"><LoadingSpinner /></div>
+    // if (isError) return <div>Ошибка: {error.message}</div>
     return (
         <Drawer
-            open={drawerState}
-            onClose={onCloseDrawer}
+            open={isOpen}
+            onClose={handleClose}
+            inert={!isOpen}
             anchor='right'
             sx={{
                 '& .MuiDrawer-paper': {
@@ -159,10 +173,7 @@ const TaskDrawer = ({ drawerState, onCloseDrawer, drawerData }: { drawerState: b
                 }
             }}
         >
-            {task && <DrawerContent
-                onCloseDrawer={onCloseDrawer}
-                drawerData={task.data}
-            />}
+            {}
         </Drawer >
     )
 }
