@@ -9,7 +9,7 @@ import TabsRouter from './components/TabsRouter'
 import Board from './board/Board'
 import Boards from './boards/Boards'
 import Issues from './issues/Issues'
-import TaskDrawer from './components/Drawer'
+import TaskDrawer from './drawer/TaskDrawer'
 import {
     QueryClient,
     QueryClientProvider,
