@@ -3,12 +3,10 @@ import DragHandleIcon from '@mui/icons-material/DragHandle'
 import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrowDown'
 import KeyboardDoubleArrowUpIcon from '@mui/icons-material/KeyboardDoubleArrowUp'
 import { useAppDispatch } from '../hooks/redux'
-import { openDrawer, closeDrawer, toggleDrawer } from '../store/drawerSlice'
+import { openDrawer } from '../store/drawerSlice'
 
 type IssuesItemProps = {
     taskData: Task
-    openTaskDrawer: () => void
-    getDrawerData: (data) => void
 }
 
 const StatusTimeline = ({ status }: { status: string }) => {
@@ -78,7 +76,7 @@ const StatusTimeline = ({ status }: { status: string }) => {
 }
 
 const IssuesItem = (props: IssuesItemProps) => {
-    const { taskData, openTaskDrawer, getDrawerData } = props
+    const { taskData} = props
     const { title, priority, status, boardName, assignee, id, boardId } = taskData
 
     const dispatch = useAppDispatch()

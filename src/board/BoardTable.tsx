@@ -9,12 +9,11 @@ import Snackbar from '@mui/material/Snackbar'
 type BoardTableType = {
     boardTasks: BoardTasks[]
     onRefresh: () => void
-    openTaskDrawer: () => void
 }
 
 const BoardTable = (props: BoardTableType) => {
 
-    const { boardTasks, onRefresh, openTaskDrawer } = props
+    const { boardTasks, onRefresh } = props
     const { mutate } = useUpdateTaskStatus()
 
 
@@ -245,7 +244,7 @@ const BoardTable = (props: BoardTableType) => {
                         <Droppable key={'backlog'} id={'backlog'}>
                             <div className={`flex flex-col gap-y-2 w-full h-fit bg-gray-300 dark:bg-[#333333] ${backlogTasks.length > 0 ? 'py-5 px-1' : 'p-0'} rounded-b-md`}>
                                 {backlogTasks.map((task) => (
-                                    <BoardTableCard task={task} key={task.id} openTaskDrawer={openTaskDrawer}/>
+                                    <BoardTableCard task={task} key={task.id}/>
                                 ))}
                             </div>
                         </Droppable>
@@ -253,7 +252,7 @@ const BoardTable = (props: BoardTableType) => {
                         <Droppable key={'inprogress'} id={'inprogress'}>
                             <div className={`flex flex-col gap-y-2 w-full h-fit bg-gray-300 dark:bg-[#333333] ${inProgressTasks.length > 0 ? 'py-5 px-1' : 'p-0'} rounded-b-md`}>
                                 {inProgressTasks.map((task) => (
-                                    <BoardTableCard task={task} key={task.id} openTaskDrawer={openTaskDrawer}/>
+                                    <BoardTableCard task={task} key={task.id} />
                                 ))}
                             </div>
                         </Droppable>
@@ -261,7 +260,7 @@ const BoardTable = (props: BoardTableType) => {
                         <Droppable key={'done'} id={'done'}>
                             <div className={`flex flex-col gap-y-2 w-full h-fit bg-gray-300 dark:bg-[#333333] ${doneTasks.length > 0 ? 'py-5 px-1' : 'p-0'} rounded-b-md`}>
                                 {doneTasks.map((task) => (
-                                    <BoardTableCard task={task} key={task.id} openTaskDrawer={openTaskDrawer}/>
+                                    <BoardTableCard task={task} key={task.id} />
                                 ))}
                             </div>
                         </Droppable>

@@ -3,7 +3,7 @@ import IssuesList from "./IssuesList"
 import LoadingSpinner from "../components/LoadingSpinner"
 
 
-const Issues = ({openTaskDrawer, getDrawerData}: {openTaskDrawer: () => void, getDrawerData: (data) => void}) => {
+const Issues = () => {
 
     const { data: tasks, isLoading, isError, error } = useTasks()
 
@@ -15,8 +15,6 @@ const Issues = ({openTaskDrawer, getDrawerData}: {openTaskDrawer: () => void, ge
         <div className="py-5 ">
             {tasks && <IssuesList
                 taskList={tasks.data}
-                openTaskDrawer={openTaskDrawer}
-                getDrawerData={getDrawerData}
             />}
         </div>
     )

@@ -24,7 +24,7 @@ const useRouteMatch = (patterns: readonly string[]) => {
     return null
 }
 
-const TabsRouter = ({ openTaskDrawer }: { openTaskDrawer: () => void }) => {
+const TabsRouter = () => {
 
     const dispatch = useAppDispatch()
 
