@@ -3,19 +3,16 @@ import { useTask } from '../hooks/useTasks'
 import { useAppSelector, useAppDispatch } from '../hooks/redux'
 import { closeDrawer } from '../store/drawerSlice'
 import DrawerContent from './DrawerContent'
+import DrawerProgress from './DrawerProgress'
 
 const TaskDrawer = () => {
 
     const { isOpen, drawerId } = useAppSelector((state) => state.drawer)
     const dispatch = useAppDispatch()
 
-    const { data: task, isLoading, isError, error, refetch } = useTask(Number(drawerId))
+    const { data: task, isLoading, refetch } = useTask(Number(drawerId))
 
-    // console.log(task?.data)
-
-    // useEffect(() => {
-    //     console.log(isLoading)
-    // }, [isLoading])
+    console.log(task?.data)
 
     const handleClose = () => {
         dispatch(closeDrawer())
@@ -27,7 +24,6 @@ const TaskDrawer = () => {
         description: '',
         priority: '',
         status: '',
-        boardId: undefined,
         assignee: {
             id: undefined,
             fullName: '',
@@ -37,8 +33,6 @@ const TaskDrawer = () => {
         boardName: ''
     }
 
-    // if (isLoading) return <div className="items-center flex justify-center"><LoadingSpinner /></div>
-    // if (isError) return <div>Ошибка: {error.message}</div>
     return (
         <Drawer
             open={isOpen}
@@ -51,11 +45,17 @@ const TaskDrawer = () => {
                 }
             }}
         >
-            <DrawerContent
-                onCloseDrawer={handleClose}
-                drawerData={task ? task.data : emptyTask}
-                onRefresh={refetch}
-            />
+            {isLoading ?
+            <div className='px-2 pt-5'>
+                <DrawerProgress />
+            </div>
+                :    
+                <DrawerContent
+                    onCloseDrawer={handleClose}
+                    drawerData={task ? task.data : emptyTask}
+                    onRefresh={refetch}
+                />
+            }
         </Drawer >
     )
 }

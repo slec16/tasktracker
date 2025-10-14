@@ -7,7 +7,7 @@ import {
 } from 'react-router'
 import { Button } from '@mui/material'
 import { useAppDispatch } from '../hooks/redux'
-import { openDrawer, closeDrawer, toggleDrawer } from '../store/drawerSlice'
+import { openDrawer } from '../store/drawerSlice'
 
 const useRouteMatch = (patterns: readonly string[]) => {
     const { pathname } = useLocation()
@@ -29,7 +29,10 @@ const TabsRouter = ({ openTaskDrawer }: { openTaskDrawer: () => void }) => {
     const dispatch = useAppDispatch()
 
     const handleOpenDrawer = () => {
-        dispatch(openDrawer('null'))
+        dispatch(openDrawer({
+            drawerId: null,
+            boardId: null
+        }))
     }
 
     const routeMatch = useRouteMatch(['/issues', '/boards', '/board/:id', '/'])

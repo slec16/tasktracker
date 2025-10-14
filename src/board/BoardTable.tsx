@@ -70,7 +70,7 @@ const BoardTable = (props: BoardTableType) => {
 
     function handleDragEnd(event: DragEndEvent) {
         const { over, active } = event  // over - куда, active - кого
-        console.log(over, active.data.current)
+        // console.log(over, active.data.current)
 
         switch (over?.id) {
             case 'backlog': //куда

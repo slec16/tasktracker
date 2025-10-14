@@ -79,12 +79,15 @@ const StatusTimeline = ({ status }: { status: string }) => {
 
 const IssuesItem = (props: IssuesItemProps) => {
     const { taskData, openTaskDrawer, getDrawerData } = props
-    const { title, priority, status, boardName, assignee, id } = taskData
+    const { title, priority, status, boardName, assignee, id, boardId } = taskData
 
     const dispatch = useAppDispatch()
 
     const handleOpenDrawer = () => {
-        dispatch(openDrawer(`${id}`))
+        dispatch(openDrawer({
+            drawerId: `${id}`,
+            boardId: `${boardId}`
+        }));
     }
 
     const priorityStyles = (priority: string) => {
@@ -106,7 +109,7 @@ const IssuesItem = (props: IssuesItemProps) => {
     }
 
     return (
-        <div 
+        <div
             onClick={handleOpenDrawer}
             className="w-full grid grid-cols-[2fr_1fr_1fr_1.5fr_1.5fr] gap-4 items-center p-4 bg-white border border-gray-200 rounded-lg shadow-sm transition-all duration-300
                         hover:shadow-lg hover:scale-[1.02] hover:border-blue-200 hover:bg-blue-50
