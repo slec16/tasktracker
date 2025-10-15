@@ -111,7 +111,7 @@ const DrawerContent = ({ onCloseDrawer, drawerData, onRefresh }: { onCloseDrawer
             }
         }
         )
-    }, [titleValue, descriptionValue, priorityValue, statusValue, assigneeValue, assignee.id, mutate, id, onRefresh])
+    }, [titleValue, descriptionValue, priorityValue, statusValue, assigneeValue, id, mutate, onRefresh])
 
     const handleAssigneeChange = useCallback((_: unknown, newValue: typeof assigneeValue) => {
         setAssigneeValue(newValue)
