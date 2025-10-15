@@ -1,4 +1,6 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo, useCallback, memo } from 'react'
+import type { ChangeEvent } from 'react'
+import type { Theme } from '@mui/material/styles'
 import { Button, IconButton } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
 import TextField from '@mui/material/TextField'
@@ -24,10 +26,15 @@ const DrawerContent = ({ onCloseDrawer, drawerData, onRefresh }: { onCloseDrawer
     const { data: boards } = useBoards()
     const { data: users } = useUsers()
 
-    const usersForAutocompleate = users?.data.map(el => ({
-        ...el,
-        label: el.fullName
-    }))
+    // console.log('render')
+
+    const usersForAutocompleate = useMemo(() => 
+        users?.data.map(el => ({
+            ...el,
+            label: el.fullName
+        })) || [], 
+        [users?.data]
+    )
 
     const [titleValue, setTitleValue] = useState(title)
     const [descriptionValue, setDescriptionValue] = useState(description)
@@ -44,18 +51,18 @@ const DrawerContent = ({ onCloseDrawer, drawerData, onRefresh }: { onCloseDrawer
         avatarUrl: string;
     } | null>(
         usersForAutocompleate?.find(el => el.id === assignee?.id) || null
-    );
+    )
 
     useEffect(() => {
         setTitleValue(title)
         setDescriptionValue(description)
         setPriorityValue(priority)
         setStatusValue(status)
-        setAssigneeValue(usersForAutocompleate?.find(el => el.id === assignee?.id) || null)
+        setAssigneeValue(usersForAutocompleate.find(el => el.id === assignee?.id) || null)
         setBoardNameValue(boardName)
-    }, [title, description, priority, status, assignee, boardName])
+    }, [title, description, priority, status, assignee, boardName, usersForAutocompleate])
 
-    const priorityOptions = [
+    const priorityOptions = useMemo(() => [
         {
             value: 'Low',
             label: 'Низкий',
@@ -68,9 +75,9 @@ const DrawerContent = ({ onCloseDrawer, drawerData, onRefresh }: { onCloseDrawer
             value: 'High',
             label: 'Высокий',
         }
-    ]
+    ], [])
 
-    const statusOptions = [
+    const statusOptions = useMemo(() => [
         {
             value: 'Backlog',
             label: 'Бэклог',
@@ -83,10 +90,9 @@ const DrawerContent = ({ onCloseDrawer, drawerData, onRefresh }: { onCloseDrawer
             value: 'Done',
             label: 'Выполнено',
         }
-    ];
+    ], [])
 
-    const updateTaskHandler = () => {
-
+    const updateTaskHandler = useCallback(() => {
         const newTask = {
             title: titleValue,
             description: descriptionValue,
@@ -105,7 +111,61 @@ const DrawerContent = ({ onCloseDrawer, drawerData, onRefresh }: { onCloseDrawer
             }
         }
         )
-    }
+    }, [titleValue, descriptionValue, priorityValue, statusValue, assigneeValue, assignee.id, mutate, id, onRefresh])
+
+    const handleAssigneeChange = useCallback((_: unknown, newValue: typeof assigneeValue) => {
+        setAssigneeValue(newValue)
+    }, [])
+
+
+    const handleTitleChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+        setTitleValue(e.target.value)
+    }, [])
+    const handleDescriptionChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+        setDescriptionValue(e.target.value)
+    }, [])
+    const handleBoardNameChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+        setBoardNameValue(e.target.value)
+    }, [])
+    const handlePriorityChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+        setPriorityValue(e.target.value)
+    }, [])
+    const handleStatusChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+        setStatusValue(e.target.value)
+    }, [])
+
+
+    const disabledProjectSx = useMemo(() => ({
+        '& .MuiInput-underline:before': {
+            borderBottomColor: (theme: Theme) =>
+                theme.palette.mode === 'dark'
+                    ? 'rgba(255, 255, 255, 0.3)'
+                    : 'rgba(0, 0, 0, 0.22)',
+            borderBottomStyle: 'solid',
+            borderBottomWidth: '1px',
+        },
+        '& .MuiInput-underline:after': {
+            borderBottomColor: (theme: Theme) =>
+                theme.palette.mode === 'dark'
+                    ? 'rgba(255, 255, 255, 0.5)'
+                    : 'rgba(0, 0, 0, 0.42)',
+            borderBottomStyle: 'solid',
+            borderBottomWidth: '2px',
+        },
+        '& .MuiInputBase-input.Mui-disabled': {
+            WebkitTextFillColor: (theme: Theme) =>
+                theme.palette.mode === 'dark'
+                    ? 'rgba(255, 255, 255, 0.7)'
+                    : 'rgba(0, 0, 0, 0.8)',
+            backgroundColor: 'transparent',
+        },
+        '& .MuiInputLabel-root.Mui-disabled': {
+            color: (theme: Theme) =>
+                theme.palette.mode === 'dark'
+                    ? 'rgba(255, 255, 255, 0.5)'
+                    : 'rgba(0, 0, 0, 0.6)',
+        },
+    }), [])
 
     return (
         <div className='flex flex-col w-full px-5 pt-3 pb-10 gap-y-4 h-full dark:bg-gray-900 relative'>
@@ -126,7 +186,7 @@ const DrawerContent = ({ onCloseDrawer, drawerData, onRefresh }: { onCloseDrawer
                         label="Название"
                         variant="standard"
                         value={titleValue}
-                        onChange={(e) => setTitleValue(e.target.value)}
+                        onChange={handleTitleChange}
                         disabled={isMutating}
                     />
                     <TextField
@@ -136,7 +196,7 @@ const DrawerContent = ({ onCloseDrawer, drawerData, onRefresh }: { onCloseDrawer
                         minRows={4}
                         maxRows={10}
                         value={descriptionValue}
-                        onChange={(e) => setDescriptionValue(e.target.value)}
+                        onChange={handleDescriptionChange}
                         disabled={isMutating}
                     />
 
@@ -146,37 +206,7 @@ const DrawerContent = ({ onCloseDrawer, drawerData, onRefresh }: { onCloseDrawer
                             variant="standard"
                             value={boardNameValue || ''}
                             disabled={true}
-                            sx={{
-                                '& .MuiInput-underline:before': {
-                                    borderBottomColor: (theme) =>
-                                        theme.palette.mode === 'dark'
-                                            ? 'rgba(255, 255, 255, 0.3)'
-                                            : 'rgba(0, 0, 0, 0.22)',
-                                    borderBottomStyle: 'solid',
-                                    borderBottomWidth: '1px',
-                                },
-                                '& .MuiInput-underline:after': {
-                                    borderBottomColor: (theme) =>
-                                        theme.palette.mode === 'dark'
-                                            ? 'rgba(255, 255, 255, 0.5)'
-                                            : 'rgba(0, 0, 0, 0.42)',
-                                    borderBottomStyle: 'solid',
-                                    borderBottomWidth: '2px',
-                                },
-                                '& .MuiInputBase-input.Mui-disabled': {
-                                    WebkitTextFillColor: (theme) =>
-                                        theme.palette.mode === 'dark'
-                                            ? 'rgba(255, 255, 255, 0.7)'
-                                            : 'rgba(0, 0, 0, 0.8)',
-                                    backgroundColor: 'transparent',
-                                },
-                                '& .MuiInputLabel-root.Mui-disabled': {
-                                    color: (theme) =>
-                                        theme.palette.mode === 'dark'
-                                            ? 'rgba(255, 255, 255, 0.5)'
-                                            : 'rgba(0, 0, 0, 0.6)',
-                                },
-                            }}
+                            sx={disabledProjectSx}
                         />
                         :
                         <TextField
@@ -184,7 +214,7 @@ const DrawerContent = ({ onCloseDrawer, drawerData, onRefresh }: { onCloseDrawer
                             label="Проект"
                             variant='standard'
                             value={boardNameValue || ''}
-                            onChange={(e) => setBoardNameValue(e.target.value)}
+                            onChange={handleBoardNameChange}
                             disabled={isMutating}
                         >
                             {boards?.data && boards.data.length > 0 ? (
@@ -206,7 +236,7 @@ const DrawerContent = ({ onCloseDrawer, drawerData, onRefresh }: { onCloseDrawer
                         label="Приоритет"
                         variant="standard"
                         value={priorityValue || ''}
-                        onChange={(e) => setPriorityValue(e.target.value)}
+                        onChange={handlePriorityChange}
                         disabled={isMutating}
                     >
                         {priorityOptions.map((option) => (
@@ -221,7 +251,7 @@ const DrawerContent = ({ onCloseDrawer, drawerData, onRefresh }: { onCloseDrawer
                         label="Статус"
                         variant="standard"
                         value={statusValue || ''}
-                        onChange={(e) => setStatusValue(e.target.value)}
+                        onChange={handleStatusChange}
                         disabled={isMutating}
                     >
                         {statusOptions.map((option) => (
@@ -230,44 +260,11 @@ const DrawerContent = ({ onCloseDrawer, drawerData, onRefresh }: { onCloseDrawer
                             </MenuItem>
                         ))}
                     </TextField>
-
-                    <Autocomplete
-                        disablePortal
-                        options={usersForAutocompleate || []}
+                    <AssigneeSelect
+                        options={usersForAutocompleate}
                         value={assigneeValue}
-                        onChange={(e, newValue) => {
-                            setAssigneeValue(newValue);
-                        }}
-                        selectOnFocus={false}
-                        getOptionLabel={(option) => option.fullName || option.label || ''}
-                        isOptionEqualToValue={(option, value) =>
-                            option.id === value?.id
-                        }
-                        renderOption={(props, option) => (
-                            <li {...props} key={option.id}>
-                                <div className="flex items-center gap-3">
-                                    <div className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-500 text-white text-sm font-medium">
-                                        {option.fullName
-                                            ?.split(' ')
-                                            .map(word => word[0])
-                                            .join('')
-                                            .toUpperCase()
-                                            .slice(0, 2)}
-                                    </div>
-                                    <div>
-                                        <div className="font-medium">{option.fullName}</div>
-                                        <div className="text-sm text-gray-500">{option.email}</div>
-                                    </div>
-                                </div>
-                            </li>
-                        )}
-                        renderInput={(params) => (
-                            <TextField
-                                {...params}
-                                label="Исполнитель"
-                                variant="standard"
-                            />
-                        )}
+                        onChange={handleAssigneeChange}
+                        disabled={isMutating}
                     />
                 </>
                 :
@@ -299,5 +296,67 @@ const DrawerContent = ({ onCloseDrawer, drawerData, onRefresh }: { onCloseDrawer
 
 }
 
-export default DrawerContent
+export default memo(DrawerContent)
+
+
+type AssigneeOption = {
+    label: string;
+    id: number;
+    fullName: string;
+    email: string;
+    description: string;
+    avatarUrl: string;
+}
+
+type AssigneeValue = AssigneeOption | null
+
+interface AssigneeSelectProps {
+    options: AssigneeOption[]
+    value: AssigneeValue
+    onChange: (event: unknown, newValue: AssigneeValue) => void
+    disabled?: boolean
+}
+
+const AssigneeSelect = memo((props: AssigneeSelectProps) => {
+
+    const { options, value, onChange, disabled } = props
+
+    return (
+        <Autocomplete
+            disablePortal
+            options={options || []}
+            value={value}
+            onChange={onChange}
+            selectOnFocus={false}
+            getOptionLabel={(option) => option.fullName || option.label || ''}
+            isOptionEqualToValue={(option, value) => option.id === value?.id}
+            renderOption={(props, option) => (
+                <li {...props} key={option.id}>
+                    <div className="flex items-center gap-3">
+                        <div className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-500 text-white text-sm font-medium">
+                            {option.fullName
+                                ?.split(' ')
+                                .map(word => word[0])
+                                .join('')
+                                .toUpperCase()
+                                .slice(0, 2)}
+                        </div>
+                        <div>
+                            <div className="font-medium">{option.fullName}</div>
+                            <div className="text-sm text-gray-500">{option.email}</div>
+                        </div>
+                    </div>
+                </li>
+            )}
+            renderInput={(params) => (
+                <TextField
+                    {...params}
+                    label="Исполнитель"
+                    variant="standard"
+                />
+            )}
+            disabled={disabled}
+        />
+    )
+})
 
