@@ -10,7 +10,7 @@ import { useNavigate } from 'react-router-dom'
 import { useBoards } from "../hooks/useBoards"
 import { useUsers } from '../hooks/useUsers'
 import { type Task } from '../api/taskApi'
-import { useUpdateTask } from '../hooks/useTasks'
+import { useUpdateTask, useCreateTask } from '../hooks/useTasks'
 import DrawerProgress from './DrawerProgress'
 import { useAppSelector } from '../hooks/redux'
 
@@ -22,17 +22,18 @@ const DrawerContent = ({ onCloseDrawer, drawerData, onRefresh }: { onCloseDrawer
 
     const navigate = useNavigate()
     const { mutate, isPending: isMutating } = useUpdateTask(id)
+    const { mutate: createTask } = useCreateTask()
 
     const { data: boards } = useBoards()
     const { data: users } = useUsers()
 
     // console.log('render')
 
-    const usersForAutocompleate = useMemo(() => 
+    const usersForAutocompleate = useMemo(() =>
         users?.data.map(el => ({
             ...el,
             label: el.fullName
-        })) || [], 
+        })) || [],
         [users?.data]
     )
 
@@ -40,7 +41,7 @@ const DrawerContent = ({ onCloseDrawer, drawerData, onRefresh }: { onCloseDrawer
     const [descriptionValue, setDescriptionValue] = useState(description)
     const [priorityValue, setPriorityValue] = useState(priority)
     const [statusValue, setStatusValue] = useState(status)
-    const [boardNameValue, setBoardNameValue] = useState(boardName)
+    // const [boardNameValue, setBoardNameValue] = useState(boardName)
 
     const [assigneeValue, setAssigneeValue] = useState<{
         label: string;
@@ -53,14 +54,16 @@ const DrawerContent = ({ onCloseDrawer, drawerData, onRefresh }: { onCloseDrawer
         usersForAutocompleate?.find(el => el.id === assignee?.id) || null
     )
 
+    const [selectedBoardId, setSelectedBoardId] = useState<string>('')
+
     useEffect(() => {
         setTitleValue(title)
         setDescriptionValue(description)
         setPriorityValue(priority)
         setStatusValue(status)
         setAssigneeValue(usersForAutocompleate.find(el => el.id === assignee?.id) || null)
-        setBoardNameValue(boardName)
-    }, [title, description, priority, status, assignee, boardName, usersForAutocompleate])
+        // setBoardNameValue(boardName)
+    }, [title, description, priority, status, assignee, boardName, boardId, usersForAutocompleate])
 
     const priorityOptions = useMemo(() => [
         {
@@ -93,39 +96,49 @@ const DrawerContent = ({ onCloseDrawer, drawerData, onRefresh }: { onCloseDrawer
     ], [])
 
     const updateTaskHandler = useCallback(() => {
-        const newTask = {
-            title: titleValue,
-            description: descriptionValue,
-            priority: priorityValue,
-            status: statusValue,
-            assigneeId: assigneeValue?.id || assignee.id
-        }
-        mutate(
-            {
-                id: id,
-                taskData: newTask
-            }, {
-            onSuccess: () => {
-                // setOpenSuccessSnackbar(true)
-                onRefresh()
+
+        if (id) {
+            const updatedTask = {
+                title: titleValue,
+                description: descriptionValue,
+                priority: priorityValue,
+                status: statusValue,
+                assigneeId: assigneeValue?.id || assignee.id
             }
+            mutate(
+                {
+                    id: id,
+                    taskData: updatedTask
+                }, {
+                    onSuccess: () => {
+                        // setOpenSuccessSnackbar(true)
+                        onRefresh()
+                    }
+                }
+            )
+        } else {
+            const newTask = {
+                assigneeId: assigneeValue?.id,
+                boardId: selectedBoardId,
+                description: descriptionValue,
+                priority: priorityValue,
+                title: titleValue
+            }
+            createTask(
+                {...newTask}
+            )
         }
-        )
+
     }, [titleValue, descriptionValue, priorityValue, statusValue, assigneeValue, id, mutate, onRefresh])
 
     const handleAssigneeChange = useCallback((_: unknown, newValue: typeof assigneeValue) => {
         setAssigneeValue(newValue)
     }, [])
-
-
     const handleTitleChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
         setTitleValue(e.target.value)
     }, [])
     const handleDescriptionChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
         setDescriptionValue(e.target.value)
-    }, [])
-    const handleBoardNameChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
-        setBoardNameValue(e.target.value)
     }, [])
     const handlePriorityChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
         setPriorityValue(e.target.value)
@@ -133,7 +146,10 @@ const DrawerContent = ({ onCloseDrawer, drawerData, onRefresh }: { onCloseDrawer
     const handleStatusChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
         setStatusValue(e.target.value)
     }, [])
-
+    const handleBoardChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+        const boardId = e.target.value
+        setSelectedBoardId(boardId)
+    }, [])
 
     const disabledProjectSx = useMemo(() => ({
         '& .MuiInput-underline:before': {
@@ -204,7 +220,7 @@ const DrawerContent = ({ onCloseDrawer, drawerData, onRefresh }: { onCloseDrawer
                         <TextField
                             label="Проект"
                             variant="standard"
-                            value={boardNameValue || ''}
+                            value={boardName || ''}
                             disabled={true}
                             sx={disabledProjectSx}
                         />
@@ -213,13 +229,13 @@ const DrawerContent = ({ onCloseDrawer, drawerData, onRefresh }: { onCloseDrawer
                             select
                             label="Проект"
                             variant='standard'
-                            value={boardNameValue || ''}
-                            onChange={handleBoardNameChange}
+                            value={selectedBoardId}
+                            onChange={handleBoardChange}
                             disabled={isMutating}
                         >
                             {boards?.data && boards.data.length > 0 ? (
                                 boards.data.map((option) => (
-                                    <MenuItem key={option.id} value={option.name}>
+                                    <MenuItem key={option.id} value={option.id}>
                                         {option.name}
                                     </MenuItem>
                                 ))
@@ -274,7 +290,7 @@ const DrawerContent = ({ onCloseDrawer, drawerData, onRefresh }: { onCloseDrawer
             <div className='flex flex-row justify-between items-center mt-auto'>
                 <Button
                     variant="contained"
-                     onClick={() => {
+                    onClick={() => {
                         navigate(`/board/${boardId}`)
                         onCloseDrawer()
                     }}
