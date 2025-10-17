@@ -13,9 +13,9 @@ import { type Task } from '../api/taskApi'
 import { useUpdateTask, useCreateTask } from '../hooks/useTasks'
 import DrawerProgress from './DrawerProgress'
 import { useAppSelector } from '../hooks/redux'
+import Snackbar from '@mui/material/Snackbar'
 
-
-const DrawerContent = ({ onCloseDrawer, drawerData, onRefresh }: { onCloseDrawer: () => void, drawerData: Task, onRefresh: () => void }) => {
+const DrawerContent = ({ onCloseDrawer, drawerData, onRefresh, onCreateSuccess, onCreateError }: { onCloseDrawer: () => void, drawerData: Task, onRefresh: () => void, onCreateSuccess?: (id: number, boardId: number) => void, onCreateError?: () => void }) => {
 
     const { id, title, description, priority, status, assignee, boardName } = drawerData
     const { boardId } = useAppSelector((state) => state.drawer)
@@ -36,6 +36,21 @@ const DrawerContent = ({ onCloseDrawer, drawerData, onRefresh }: { onCloseDrawer
         })) || [],
         [users?.data]
     )
+
+    const [openSuccessEditSnackbar, setOpenSuccessEditSnackbar] = useState(false)
+    const [openErrorEditSnackbar, setOpenErrorEditSnackbar] = useState(false)
+    // Create Snackbars are lifted to parent to persist across remounts
+
+    const handleSuccessEditClose = () => {
+        setOpenSuccessEditSnackbar(false)
+    }
+
+    const handleErrorEditClose = () => {
+        setOpenErrorEditSnackbar(false)
+    }
+
+    // Handled in parent
+
 
     const [titleValue, setTitleValue] = useState(title)
     const [descriptionValue, setDescriptionValue] = useState(description)
@@ -110,26 +125,38 @@ const DrawerContent = ({ onCloseDrawer, drawerData, onRefresh }: { onCloseDrawer
                     id: id,
                     taskData: updatedTask
                 }, {
-                    onSuccess: () => {
-                        // setOpenSuccessSnackbar(true)
-                        onRefresh()
-                    }
+                onSuccess: () => {
+                    setOpenSuccessEditSnackbar(true)
+                    onRefresh()
+                },
+                onError: () => {
+                    setOpenErrorEditSnackbar(true)
                 }
+            }
             )
         } else {
             const newTask = {
-                assigneeId: assigneeValue?.id,
-                boardId: selectedBoardId,
+                assigneeId: assigneeValue?.id as unknown as number,
+                boardId: Number(selectedBoardId),
                 description: descriptionValue,
                 priority: priorityValue,
                 title: titleValue
             }
+            //return id created task
             createTask(
-                {...newTask}
+                { ...newTask }, {
+                onSuccess: (res) => {
+                    onCreateSuccess?.(res.data.id, Number(selectedBoardId))
+                },
+                onError: () => {
+                    onCreateError?.()
+                }
+            }
+
             )
         }
 
-    }, [titleValue, descriptionValue, priorityValue, statusValue, assigneeValue, id, mutate, onRefresh])
+    }, [titleValue, descriptionValue, priorityValue, statusValue, assigneeValue, id, mutate, createTask, onRefresh])
 
     const handleAssigneeChange = useCallback((_: unknown, newValue: typeof assigneeValue) => {
         setAssigneeValue(newValue)
@@ -307,7 +334,36 @@ const DrawerContent = ({ onCloseDrawer, drawerData, onRefresh }: { onCloseDrawer
                     {isMutating ? 'Сохранение...' : (id == undefined ? 'Создать' : 'Редактировать')}
                 </Button>
             </div>
+
+            <Snackbar
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+                open={openSuccessEditSnackbar}
+                autoHideDuration={3000}
+                onClose={handleSuccessEditClose}
+                message="Задача успешно изменена"
+                sx={{
+                    '& .MuiSnackbarContent-root': {
+                        backgroundColor: '#4caf50', // зеленый цвет
+                        color: '#fff'
+                    }
+                }}
+            />
+            <Snackbar
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+                open={openErrorEditSnackbar}
+                autoHideDuration={3000}
+                onClose={handleErrorEditClose}
+                message="Не удалось изменить задачу"
+                sx={{
+                    '& .MuiSnackbarContent-root': {
+                        backgroundColor: '#d21616', // красный цвет
+                        color: '#fff'
+                    }
+                }}
+            />
+            {/* Create Snackbars handled in parent */}
         </div>
+
     )
 
 }

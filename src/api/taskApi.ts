@@ -47,7 +47,7 @@ export const taskApi = {
         return response.json()
     },
 
-    createTask: async (taskData: createTask): Promise<{ id: number }> => {
+    createTask: async (taskData: createTask): Promise<{data: { id: number }}> => {
         const response = await fetch(`${baseUrl}/api/v1/tasks/create`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
