@@ -17,6 +17,7 @@ const TaskDrawer = () => {
     console.log(task?.data)
 
     const handleClose = () => {
+        // ??? при закрытии id сбрасывает и drawer показывет перед закрытием форму создания задачи
         dispatch(closeDrawer())
     }
 

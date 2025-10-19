@@ -63,6 +63,16 @@ const DrawerContent = (props: DrawerContentProps) => {
 
     const [selectedBoardId, setSelectedBoardId] = useState<string>('')
 
+    // Состояния для валидации
+    const [errors, setErrors] = useState<{
+        title?: string
+        description?: string
+        priority?: string
+        status?: string
+        assignee?: string
+        board?: string
+    }>({})
+
     useEffect(() => {
         setTitleValue(title)
         setDescriptionValue(description)
@@ -101,7 +111,44 @@ const DrawerContent = (props: DrawerContentProps) => {
         }
     ], [])
 
+    // Функция валидации полей
+    const validateFields = useCallback(() => {
+        const newErrors: typeof errors = {}
+
+        if (!titleValue.trim()) {
+            newErrors.title = 'Название обязательно'
+        }
+
+        if (!descriptionValue.trim()) {
+            newErrors.description = 'Описание обязательно'
+        }
+
+        if (!priorityValue) {
+            newErrors.priority = 'Приоритет обязателен'
+        }
+
+        if (!statusValue) {
+            newErrors.status = 'Статус обязателен'
+        }
+
+        if (!assigneeValue?.id) {
+            newErrors.assignee = 'Исполнитель обязателен'
+        }
+
+        if (!id && !selectedBoardId) {
+            newErrors.board = 'Проект обязателен'
+        }
+
+        setErrors(newErrors)
+        return Object.keys(newErrors).length === 0
+    }, [titleValue, descriptionValue, priorityValue, statusValue, assigneeValue, selectedBoardId, id])
+
     const updateTaskHandler = useCallback(() => {
+        
+        const isValid = validateFields()
+        if (!isValid) {
+            return
+        }
 
         if (id) {
             const updatedTask = {
@@ -118,6 +165,7 @@ const DrawerContent = (props: DrawerContentProps) => {
                 }, {
                 onSuccess: () => {
                     onUpdateSuccess()
+                    setErrors({})
                 },
                 onError: () => {
                     onUpdateError()
@@ -125,49 +173,74 @@ const DrawerContent = (props: DrawerContentProps) => {
             }
             )
         } else {
-            // TODO валидация заполнения всех полей
             const newTask = {
-                assigneeId: assigneeValue?.id as unknown as number,
+                assigneeId: assigneeValue?.id as number,
                 boardId: Number(selectedBoardId),
                 description: descriptionValue,
                 priority: priorityValue,
                 title: titleValue
             }
-            //return id created task
+
             createTask(
                 { ...newTask }, {
                 onSuccess: (res) => {
                     onCreateSuccess?.(res.data.id, Number(selectedBoardId))
+                    setErrors({})
                 },
                 onError: () => {
                     onCreateError?.()
                 }
-            }
-
-            )
+            })
         }
-
-    }, [titleValue, descriptionValue, priorityValue, statusValue, assigneeValue, id, mutate, createTask])
+    }, [
+        titleValue, descriptionValue, priorityValue, statusValue,
+        assigneeValue, id, mutate, createTask, selectedBoardId,
+        onUpdateSuccess, onUpdateError, onCreateSuccess,
+        onCreateError, validateFields
+    ])
 
     const handleAssigneeChange = useCallback((_: unknown, newValue: typeof assigneeValue) => {
         setAssigneeValue(newValue)
-    }, [])
+        if (errors.assignee && newValue?.id) {
+            setErrors(prev => ({ ...prev, assignee: undefined }))
+        }
+    }, [errors.assignee])
+
     const handleTitleChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
         setTitleValue(e.target.value)
-    }, [])
+        if (errors.title && e.target.value.trim()) {
+            setErrors(prev => ({ ...prev, title: undefined }))
+        }
+    }, [errors.title])
+
     const handleDescriptionChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
         setDescriptionValue(e.target.value)
-    }, [])
+        if (errors.description && e.target.value.trim()) {
+            setErrors(prev => ({ ...prev, description: undefined }))
+        }
+    }, [errors.description])
+
     const handlePriorityChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
         setPriorityValue(e.target.value)
-    }, [])
+        if (errors.priority && e.target.value) {
+            setErrors(prev => ({ ...prev, priority: undefined }))
+        }
+    }, [errors.priority])
+
     const handleStatusChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
         setStatusValue(e.target.value)
-    }, [])
+        if (errors.status && e.target.value) {
+            setErrors(prev => ({ ...prev, status: undefined }))
+        }
+    }, [errors.status])
+
     const handleBoardChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
         const boardId = e.target.value
         setSelectedBoardId(boardId)
-    }, [])
+        if (errors.board && boardId) {
+            setErrors(prev => ({ ...prev, board: undefined }))
+        }
+    }, [errors.board])
 
     const disabledProjectSx = useMemo(() => ({
         '& .MuiInput-underline:before': {
@@ -222,6 +295,9 @@ const DrawerContent = (props: DrawerContentProps) => {
                         value={titleValue}
                         onChange={handleTitleChange}
                         disabled={isMutating}
+                        error={!!errors.title}
+                        helperText={errors.title}
+                        required
                     />
                     <TextField
                         label="Описание"
@@ -232,6 +308,9 @@ const DrawerContent = (props: DrawerContentProps) => {
                         value={descriptionValue}
                         onChange={handleDescriptionChange}
                         disabled={isMutating}
+                        error={!!errors.description}
+                        helperText={errors.description}
+                        required
                     />
 
                     {id !== undefined ?
@@ -250,6 +329,9 @@ const DrawerContent = (props: DrawerContentProps) => {
                             value={selectedBoardId}
                             onChange={handleBoardChange}
                             disabled={isMutating}
+                            error={!!errors.board}
+                            helperText={errors.board}
+                            required
                         >
                             {boards?.data && boards.data.length > 0 ? (
                                 boards.data.map((option) => (
@@ -272,6 +354,9 @@ const DrawerContent = (props: DrawerContentProps) => {
                         value={priorityValue || ''}
                         onChange={handlePriorityChange}
                         disabled={isMutating}
+                        error={!!errors.priority}
+                        helperText={errors.priority}
+                        required
                     >
                         {priorityOptions.map((option) => (
                             <MenuItem key={option.value} value={option.value}>
@@ -287,6 +372,9 @@ const DrawerContent = (props: DrawerContentProps) => {
                         value={statusValue || ''}
                         onChange={handleStatusChange}
                         disabled={isMutating}
+                        error={!!errors.status}
+                        helperText={errors.status}
+                        required
                     >
                         {statusOptions.map((option) => (
                             <MenuItem key={option.value} value={option.value}>
@@ -294,11 +382,14 @@ const DrawerContent = (props: DrawerContentProps) => {
                             </MenuItem>
                         ))}
                     </TextField>
+
                     <AssigneeSelect
                         options={usersForAutocompleate}
                         value={assigneeValue}
                         onChange={handleAssigneeChange}
                         disabled={isMutating}
+                        error={errors.assignee}
+                        required
                     />
                 </>
                 :
@@ -320,7 +411,7 @@ const DrawerContent = (props: DrawerContentProps) => {
                 <Button
                     variant="contained"
                     onClick={updateTaskHandler}
-                    disabled={isMutating}
+                    // disabled={!canSave}
                 >
                     {isMutating ? 'Сохранение...' : (id == undefined ? 'Создать' : 'Редактировать')}
                 </Button>
@@ -350,11 +441,13 @@ interface AssigneeSelectProps {
     value: AssigneeValue
     onChange: (event: unknown, newValue: AssigneeValue) => void
     disabled?: boolean
+    error?: string
+    required?: boolean
 }
 
 const AssigneeSelect = memo((props: AssigneeSelectProps) => {
 
-    const { options, value, onChange, disabled } = props
+    const { options, value, onChange, disabled, error, required } = props
 
     return (
         <Autocomplete
@@ -386,8 +479,10 @@ const AssigneeSelect = memo((props: AssigneeSelectProps) => {
             renderInput={(params) => (
                 <TextField
                     {...params}
-                    label="Исполнитель"
+                    label={`Исполнитель${required ? ' *' : ''}`}
                     variant="standard"
+                    error={!!error}
+                    helperText={error}
                 />
             )}
             disabled={disabled}
