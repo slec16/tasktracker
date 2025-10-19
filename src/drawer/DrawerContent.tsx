@@ -406,7 +406,6 @@ const DrawerContent = (props: DrawerContentProps) => {
                     variant="contained"
                     onClick={() => {
                         navigate(`/board/${boardId}`)
-                        onCloseDrawer()
                     }}
                     disabled={isMutating || !boardId}
                 >
