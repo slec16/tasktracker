@@ -13,9 +13,19 @@ import { type Task } from '../api/taskApi'
 import { useUpdateTask, useCreateTask } from '../hooks/useTasks'
 import DrawerProgress from './DrawerProgress'
 import { useAppSelector } from '../hooks/redux'
-import Snackbar from '@mui/material/Snackbar'
 
-const DrawerContent = ({ onCloseDrawer, drawerData, onRefresh, onCreateSuccess, onCreateError }: { onCloseDrawer: () => void, drawerData: Task, onRefresh: () => void, onCreateSuccess?: (id: number, boardId: number) => void, onCreateError?: () => void }) => {
+type DrawerContentProps = {
+    onCloseDrawer: () => void
+    drawerData: Task
+    onCreateSuccess?: (id: number, boardId: number) => void
+    onCreateError?: () => void
+    onUpdateSuccess: () => void
+    onUpdateError: () => void
+}
+
+const DrawerContent = (props: DrawerContentProps) => {
+
+    const { onCloseDrawer, drawerData, onCreateSuccess, onCreateError, onUpdateSuccess, onUpdateError } = props
 
     const { id, title, description, priority, status, assignee, boardName } = drawerData
     const { boardId } = useAppSelector((state) => state.drawer)
@@ -27,8 +37,6 @@ const DrawerContent = ({ onCloseDrawer, drawerData, onRefresh, onCreateSuccess, 
     const { data: boards } = useBoards()
     const { data: users } = useUsers()
 
-    // console.log('render')
-
     const usersForAutocompleate = useMemo(() =>
         users?.data.map(el => ({
             ...el,
@@ -37,26 +45,10 @@ const DrawerContent = ({ onCloseDrawer, drawerData, onRefresh, onCreateSuccess, 
         [users?.data]
     )
 
-    const [openSuccessEditSnackbar, setOpenSuccessEditSnackbar] = useState(false)
-    const [openErrorEditSnackbar, setOpenErrorEditSnackbar] = useState(false)
-    // Create Snackbars are lifted to parent to persist across remounts
-
-    const handleSuccessEditClose = () => {
-        setOpenSuccessEditSnackbar(false)
-    }
-
-    const handleErrorEditClose = () => {
-        setOpenErrorEditSnackbar(false)
-    }
-
-    // Handled in parent
-
-
     const [titleValue, setTitleValue] = useState(title)
     const [descriptionValue, setDescriptionValue] = useState(description)
     const [priorityValue, setPriorityValue] = useState(priority)
     const [statusValue, setStatusValue] = useState(status)
-    // const [boardNameValue, setBoardNameValue] = useState(boardName)
 
     const [assigneeValue, setAssigneeValue] = useState<{
         label: string;
@@ -77,7 +69,6 @@ const DrawerContent = ({ onCloseDrawer, drawerData, onRefresh, onCreateSuccess, 
         setPriorityValue(priority)
         setStatusValue(status)
         setAssigneeValue(usersForAutocompleate.find(el => el.id === assignee?.id) || null)
-        // setBoardNameValue(boardName)
     }, [title, description, priority, status, assignee, boardName, boardId, usersForAutocompleate])
 
     const priorityOptions = useMemo(() => [
@@ -126,15 +117,15 @@ const DrawerContent = ({ onCloseDrawer, drawerData, onRefresh, onCreateSuccess, 
                     taskData: updatedTask
                 }, {
                 onSuccess: () => {
-                    setOpenSuccessEditSnackbar(true)
-                    onRefresh()
+                    onUpdateSuccess()
                 },
                 onError: () => {
-                    setOpenErrorEditSnackbar(true)
+                    onUpdateError()
                 }
             }
             )
         } else {
+            // TODO валидация заполнения всех полей
             const newTask = {
                 assigneeId: assigneeValue?.id as unknown as number,
                 boardId: Number(selectedBoardId),
@@ -156,7 +147,7 @@ const DrawerContent = ({ onCloseDrawer, drawerData, onRefresh, onCreateSuccess, 
             )
         }
 
-    }, [titleValue, descriptionValue, priorityValue, statusValue, assigneeValue, id, mutate, createTask, onRefresh])
+    }, [titleValue, descriptionValue, priorityValue, statusValue, assigneeValue, id, mutate, createTask])
 
     const handleAssigneeChange = useCallback((_: unknown, newValue: typeof assigneeValue) => {
         setAssigneeValue(newValue)
@@ -334,34 +325,6 @@ const DrawerContent = ({ onCloseDrawer, drawerData, onRefresh, onCreateSuccess, 
                     {isMutating ? 'Сохранение...' : (id == undefined ? 'Создать' : 'Редактировать')}
                 </Button>
             </div>
-
-            <Snackbar
-                anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-                open={openSuccessEditSnackbar}
-                autoHideDuration={3000}
-                onClose={handleSuccessEditClose}
-                message="Задача успешно изменена"
-                sx={{
-                    '& .MuiSnackbarContent-root': {
-                        backgroundColor: '#4caf50', // зеленый цвет
-                        color: '#fff'
-                    }
-                }}
-            />
-            <Snackbar
-                anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-                open={openErrorEditSnackbar}
-                autoHideDuration={3000}
-                onClose={handleErrorEditClose}
-                message="Не удалось изменить задачу"
-                sx={{
-                    '& .MuiSnackbarContent-root': {
-                        backgroundColor: '#d21616', // красный цвет
-                        color: '#fff'
-                    }
-                }}
-            />
-            {/* Create Snackbars handled in parent */}
         </div>
 
     )
