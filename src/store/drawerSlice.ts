@@ -4,12 +4,14 @@ interface DrawerState {
     isOpen: boolean
     drawerId: string | null
     boardId: string | null
+    refetchState?: boolean
 }
 
 const initialState: DrawerState = {
     isOpen: false,
     drawerId: null,
     boardId: null,
+    refetchState: false
 };
 
 const drawerSlice = createSlice({
@@ -43,9 +45,15 @@ const drawerSlice = createSlice({
                 state.boardId = action.payload.boardId
             }
         },
+        setRefetchTrue: (state) => {
+            state.refetchState = true
+        },
+        setRefetchFalse: (state) => {
+            state.refetchState = false
+        }
 
     },
 });
 
-export const { openDrawer, closeDrawer, toggleDrawer } = drawerSlice.actions
+export const { openDrawer, closeDrawer, toggleDrawer, setRefetchFalse, setRefetchTrue } = drawerSlice.actions
 export default drawerSlice.reducer

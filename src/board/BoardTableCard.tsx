@@ -4,6 +4,9 @@ import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrow
 import KeyboardDoubleArrowUpIcon from '@mui/icons-material/KeyboardDoubleArrowUp'
 import { useDraggable, useDndContext } from '@dnd-kit/core'
 import type { ReactNode } from "react"
+import { useParams } from "react-router-dom"
+import { useAppDispatch } from '../hooks/redux'
+import { openDrawer } from '../store/drawerSlice'
 
 export function Draggable(props: { id: string, status: string, children: ReactNode }) {
     const { attributes, listeners, setNodeRef, transform } = useDraggable({
@@ -18,7 +21,7 @@ export function Draggable(props: { id: string, status: string, children: ReactNo
     const isActive = active?.id === props.id
 
     const style = {
-        transform: transform 
+        transform: transform
             ? `translate3d(${transform.x}px, ${transform.y}px, 0)`
             : undefined,
         scale: isActive ? '1.05' : '1',
@@ -43,6 +46,15 @@ type BoardTableCardProps = {
 const BoardTableCard = (props: BoardTableCardProps) => {
 
     const { task } = props
+    const { id: boardId } = useParams()
+    const dispatch = useAppDispatch()
+
+    const handleOpenDrawer = () => {
+        dispatch(openDrawer({
+            drawerId: `${task.id}`,
+            boardId: `${boardId}`,
+        }))
+    }
 
     const priorityStyles = (priority: string) => {
         switch (priority) {
@@ -65,7 +77,7 @@ const BoardTableCard = (props: BoardTableCardProps) => {
     return (
         <Draggable id={`${task.id}`} status={`${task.status}`}>
             <div
-                onClick={() => console.log('open')}
+                onClick={handleOpenDrawer}
                 key={task.id}
                 className="bg-gray-50 dark:bg-gray-700/60 p-3 rounded-lg border border-gray-200 dark:border-gray-600 cursor-pointer hover:shadow-md"
             >

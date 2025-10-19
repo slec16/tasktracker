@@ -13,6 +13,8 @@ import { type Task } from '../api/taskApi'
 import { useUpdateTask, useCreateTask } from '../hooks/useTasks'
 import DrawerProgress from './DrawerProgress'
 import { useAppSelector } from '../hooks/redux'
+import { useAppDispatch } from '../hooks/redux'
+import { setRefetchTrue } from '../store/drawerSlice'
 
 type DrawerContentProps = {
     onCloseDrawer: () => void
@@ -29,6 +31,8 @@ const DrawerContent = (props: DrawerContentProps) => {
 
     const { id, title, description, priority, status, assignee, boardName } = drawerData
     const { boardId } = useAppSelector((state) => state.drawer)
+
+    const dispatch = useAppDispatch()
 
     const navigate = useNavigate()
     const { mutate, isPending: isMutating } = useUpdateTask(id)
@@ -166,6 +170,7 @@ const DrawerContent = (props: DrawerContentProps) => {
                 onSuccess: () => {
                     onUpdateSuccess()
                     setErrors({})
+                    dispatch(setRefetchTrue())
                 },
                 onError: () => {
                     onUpdateError()
