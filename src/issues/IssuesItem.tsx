@@ -3,6 +3,7 @@ import DragHandleIcon from '@mui/icons-material/DragHandle'
 import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrowDown'
 import KeyboardDoubleArrowUpIcon from '@mui/icons-material/KeyboardDoubleArrowUp'
 import { useAppDispatch } from '../hooks/redux'
+import { useAppSelector } from '../hooks/redux'
 import { openDrawer } from '../store/drawerSlice'
 
 type IssuesItemProps = {
@@ -79,6 +80,8 @@ const IssuesItem = (props: IssuesItemProps) => {
     const { taskData} = props
     const { title, priority, status, boardName, assignee, id, boardId } = taskData
 
+    const { drawerId } = useAppSelector((state) => state.drawer)
+
     const dispatch = useAppDispatch()
 
     const handleOpenDrawer = () => {
@@ -110,8 +113,9 @@ const IssuesItem = (props: IssuesItemProps) => {
         <div
             onClick={handleOpenDrawer}
             className="w-full grid grid-cols-[2fr_1fr_1fr_1.5fr_1.5fr] gap-4 items-center py-2 px-4 bg-white border border-gray-200 rounded-lg shadow-sm 
-                        hover:shadow-lg hover:border-blue-200 hover:bg-blue-50
+                        hover:shadow-lg hover:border-blue-200 hover:bg-blue-50 aria-selected:bg-blue-100 dark:aria-selected:bg-orange-700/10
                         dark:bg-gray-900 dark:border-gray-700 dark:hover:shadow-lg dark:hover:shadow-orange-900/20 dark:hover:border-orange-600/50 dark:hover:bg-orange-700/10"
+            aria-selected={drawerId == String(id)}
         >
             {/* Заголовок */}
             <div className="text-left">

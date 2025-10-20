@@ -184,12 +184,17 @@ const IssuesList = (props: IssuesListProps) => {
                     </button>
                 </p>
             </div>
-            {filteredTasks.map((task) => (
-                <IssuesItem
-                    key={task.id}
-                    taskData={task}
-                />
-            ))}
+
+            {filteredTasks.length == 0 ?
+                <p className="text-center text-2xl font-semibold py-5 text-sky-600 dark:text-orange-400">Ничего не найдено</p>
+                :
+                filteredTasks.map((task) => (
+                    <IssuesItem
+                        key={task.id}
+                        taskData={task}
+                    />
+                ))
+            }
 
         </div>
     )
