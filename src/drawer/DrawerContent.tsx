@@ -15,6 +15,7 @@ import DrawerProgress from './DrawerProgress'
 import { useAppSelector } from '../hooks/redux'
 import { useAppDispatch } from '../hooks/redux'
 import { setRefetchTrue } from '../store/drawerSlice'
+import { useMatch } from 'react-router-dom'
 
 type DrawerContentProps = {
     onCloseDrawer: () => void
@@ -28,6 +29,8 @@ type DrawerContentProps = {
 const DrawerContent = (props: DrawerContentProps) => {
 
     const { onCloseDrawer, drawerData, onCreateSuccess, onCreateError, onUpdateSuccess, onUpdateError } = props
+
+    const match = useMatch('/board/:boardId')
 
     const { id, title, description, priority, status, assignee, boardName } = drawerData
     const { boardId } = useAppSelector((state) => state.drawer)
@@ -148,7 +151,7 @@ const DrawerContent = (props: DrawerContentProps) => {
     }, [titleValue, descriptionValue, priorityValue, statusValue, assigneeValue, selectedBoardId, id])
 
     const updateTaskHandler = useCallback(() => {
-        
+
         const isValid = validateFields()
         if (!isValid) {
             return
@@ -407,7 +410,7 @@ const DrawerContent = (props: DrawerContentProps) => {
                     onClick={() => {
                         navigate(`/board/${boardId}`)
                     }}
-                    disabled={isMutating || !boardId}
+                    disabled={isMutating || !boardId ||  match?.params.boardId == boardId}
                 >
                     Перейти на доску
                 </Button>
