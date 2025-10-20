@@ -1,7 +1,11 @@
 import { type Task } from "../api/taskApi"
 import IssuesItem from "./IssuesItem"
 import SwapVertIcon from '@mui/icons-material/SwapVert'
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
+import { useSearchParams } from 'react-router-dom'
+import { TextField, InputAdornment, IconButton as MIconButton } from '@mui/material'
+import SearchIcon from '@mui/icons-material/Search'
+import CloseIcon from '@mui/icons-material/Close'
 
 type IssuesListProps = {
     taskList: Task[]
@@ -11,6 +15,23 @@ type IssuesListProps = {
 const IssuesList = (props: IssuesListProps) => {
 
     const { taskList } = props
+    const [searchParams, setSearchParams] = useSearchParams()
+    const initialQuery = (searchParams.get('q') || '')
+    const [queryInput, setQueryInput] = useState(initialQuery)
+    const query = queryInput.trim().toLowerCase()
+
+    useEffect(() => {
+        const handler = setTimeout(() => {
+            const next = new URLSearchParams(searchParams)
+            if (queryInput && queryInput.trim().length > 0) {
+                next.set('q', queryInput)
+            } else {
+                next.delete('q')
+            }
+            setSearchParams(next, { replace: true })
+        }, 250)
+        return () => clearTimeout(handler)
+    }, [queryInput, searchParams, setSearchParams])
 
     type SortKey = 'title' | 'priority' | 'status' | 'boardName' | 'assigneeFullName'
 
@@ -81,8 +102,53 @@ const IssuesList = (props: IssuesListProps) => {
         return copy
     }, [taskList, sortKey, sortOrder])
 
+    const filteredTasks = useMemo(() => {
+        if (!query) return sortedTasks
+        return sortedTasks.filter(t => t.title.toLowerCase().includes(query))
+    }, [sortedTasks, query])
+
     return (
         <div className="flex flex-col gap-y-3 px-10">
+            <div className="w-full self-start">
+                <TextField
+                    fullWidth
+                    size="small"
+                    placeholder="Поиск задач по названию..."
+                    value={queryInput}
+                    onChange={(e) => setQueryInput(e.target.value)}
+                    sx={{
+                        '& .MuiOutlinedInput-root': {
+                            borderRadius: '9999px',
+                            '& .MuiOutlinedInput-notchedOutline': {
+                                borderRadius: '9999px',
+                                borderWidth: 2
+                            },
+                            '&:hover .MuiOutlinedInput-notchedOutline': {
+                                borderWidth: 2
+                            },
+                            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                borderWidth: 2
+                            }
+                        },
+                    }}
+                    slotProps={{
+                        input: {
+                            startAdornment: (
+                                <InputAdornment position="start">
+                                    <SearchIcon color="action" />
+                                </InputAdornment>
+                            ),
+                            endAdornment: queryInput ? (
+                                <InputAdornment position="end">
+                                    <MIconButton size="small" onClick={() => setQueryInput('')}>
+                                        <CloseIcon fontSize="small" />
+                                    </MIconButton>
+                                </InputAdornment>
+                            ) : undefined
+                        }
+                    }}
+                />
+            </div>
             {/* table header */}
             <div className="w-full py-4 px-6 rounded-lg bg-gradient-to-r from-gray-50 to-gray-100 border border-gray-200 
                 dark:from-gray-800 dark:to-gray-900 dark:border-gray-700 
@@ -118,7 +184,7 @@ const IssuesList = (props: IssuesListProps) => {
                     </button>
                 </p>
             </div>
-            {sortedTasks.map((task) => (
+            {filteredTasks.map((task) => (
                 <IssuesItem
                     key={task.id}
                     taskData={task}
