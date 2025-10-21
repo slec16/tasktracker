@@ -68,7 +68,7 @@ const DrawerContent = (props: DrawerContentProps) => {
         usersForAutocompleate?.find(el => el.id === assignee?.id) || null
     )
 
-    const [selectedBoardId, setSelectedBoardId] = useState<string>('')
+    const [selectedBoardId, setSelectedBoardId] = useState<string>(match?.params.boardId ? match?.params.boardId : '')
 
     // Состояния для валидации
     const [errors, setErrors] = useState<{
