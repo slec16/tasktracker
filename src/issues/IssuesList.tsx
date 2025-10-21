@@ -150,9 +150,9 @@ const IssuesList = (props: IssuesListProps) => {
                 />
             </div>
             {/* table header */}
-            <div className="w-full py-4 px-6 rounded-lg bg-gradient-to-r from-gray-50 to-gray-100 border border-gray-200 
-                dark:from-gray-800 dark:to-gray-900 dark:border-gray-700 
-                grid grid-cols-[2fr_1fr_1fr_1.5fr_1.5fr] gap-4 items-center shadow-sm">
+            <div className="w-full py-4 px-6 rounded-lg bg-gray-100 border border-gray-200 dark:bg-[#444444] dark:border-[#2c2c2c]
+                            grid grid-cols-[2fr_1fr_1fr_1.5fr_1.5fr] gap-4 items-center shadow-sm"
+            >
                 <p className="text-center text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider group relative">
                     Задача
                     <button onClick={() => toggleSort('title')} className="absolute top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity ml-1 p-1 rounded-xl hover:bg-gray-300 dark:hover:bg-gray-700">

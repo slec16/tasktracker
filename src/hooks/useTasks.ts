@@ -66,7 +66,7 @@ export const useUpdateTaskStatus = () => {
 
     return useMutation({
         mutationFn: ({ id, taskStatus }: { id: number; taskStatus: {status: string} }) => taskApi.updateTaskStatus(id, taskStatus),
-        onSuccess: (updatedUser) => {
+        onSuccess: () => {
             // Обновляем конкретную задачу в кэше
             // queryClient.setQueryData(taskKeys.detail(id), updatedUser);
             // Инвалидируем список задач
