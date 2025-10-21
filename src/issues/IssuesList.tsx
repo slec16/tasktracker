@@ -1,11 +1,11 @@
 import { type Task } from "../api/taskApi"
 import IssuesItem from "./IssuesItem"
 import SwapVertIcon from '@mui/icons-material/SwapVert'
-import { useEffect, useMemo, useState } from "react"
 import { useSearchParams } from 'react-router-dom'
 import { TextField, InputAdornment, IconButton as MIconButton } from '@mui/material'
 import SearchIcon from '@mui/icons-material/Search'
 import CloseIcon from '@mui/icons-material/Close'
+import { useEffect, useMemo, useState } from "react"
 
 type IssuesListProps = {
     taskList: Task[]
