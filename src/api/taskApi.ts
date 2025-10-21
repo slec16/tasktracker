@@ -14,6 +14,22 @@ export interface Task {
     boardName: string
 }
 
+export interface EmptyTask {
+    id: number | undefined,
+    title: string,
+    description: string,
+    priority: string,
+    status: string,
+    // boardId: number,
+    assignee: {
+        id: number | undefined,
+        fullName: string,
+        email: string,
+        avatarUrl: string
+    }
+    boardName: string
+}
+
 export interface createTask {
     assigneeId: number,
     boardId: number,

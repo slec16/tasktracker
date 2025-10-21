@@ -9,7 +9,7 @@ import MenuItem from '@mui/material/MenuItem'
 import { useNavigate } from 'react-router-dom'
 import { useBoards } from "../hooks/useBoards"
 import { useUsers } from '../hooks/useUsers'
-import { type Task } from '../api/taskApi'
+import type { Task, EmptyTask } from '../api/taskApi'
 import { useUpdateTask, useCreateTask } from '../hooks/useTasks'
 import DrawerProgress from './DrawerProgress'
 import { useAppSelector } from '../hooks/redux'
@@ -19,7 +19,7 @@ import { useMatch } from 'react-router-dom'
 
 type DrawerContentProps = {
     onCloseDrawer: () => void
-    drawerData: Task
+    drawerData: Task | EmptyTask
     onCreateSuccess?: (id: number, boardId: number) => void
     onCreateError?: () => void
     onUpdateSuccess: () => void
@@ -38,7 +38,7 @@ const DrawerContent = (props: DrawerContentProps) => {
     const dispatch = useAppDispatch()
 
     const navigate = useNavigate()
-    const { mutate, isPending: isMutating } = useUpdateTask(id)
+    const { mutate, isPending: isMutating } = useUpdateTask(id as number)
     const { mutate: createTask } = useCreateTask()
 
     const { data: boards } = useBoards()
@@ -163,7 +163,7 @@ const DrawerContent = (props: DrawerContentProps) => {
                 description: descriptionValue,
                 priority: priorityValue,
                 status: statusValue,
-                assigneeId: assigneeValue?.id || assignee.id
+                assigneeId: assigneeValue?.id || assignee.id as number
             }
             mutate(
                 {
@@ -283,7 +283,7 @@ const DrawerContent = (props: DrawerContentProps) => {
     }), [])
 
     return (
-        <div className='flex flex-col w-full px-5 pt-3 pb-10 gap-y-4 h-full dark:bg-gray-900 relative'>
+        <div className='flex flex-col w-full px-5 pt-3 pb-10 gap-y-4 h-full relative'>
 
             <div className='flex flex-row justify-between items-center'>
                 <p className='text-2xl font-bold mr-2'>{id == undefined ? 'Создание задачи' : 'Редактирование задачи'}</p>

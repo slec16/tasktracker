@@ -2,6 +2,7 @@ import Drawer from '@mui/material/Drawer'
 import Snackbar from '@mui/material/Snackbar'
 import { useState, useCallback } from 'react'
 import { useTask } from '../hooks/useTasks'
+import { type EmptyTask } from '../api/taskApi'
 import { useAppSelector, useAppDispatch } from '../hooks/redux'
 import { closeDrawer, openDrawer } from '../store/drawerSlice'
 import DrawerContent from './DrawerContent'
@@ -46,7 +47,7 @@ const TaskDrawer = () => {
         setOpenEditError(true)
     }
 
-    const emptyTask = {
+    const emptyTask: EmptyTask = {
         id: undefined,
         title: '',
         description: '',
@@ -69,7 +70,7 @@ const TaskDrawer = () => {
             anchor='right'
             sx={{
                 '& .MuiDrawer-paper': {
-                    width: '33vw', // 33% от ширины viewport
+                    width: '33vw',
                 }
             }}
         >
