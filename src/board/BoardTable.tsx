@@ -200,14 +200,7 @@ const BoardTable = (props: BoardTableType) => {
 
     return (
         <>
-            <div className="w-full h-full px-5">
-                <div className="mb-6">
-                    {/* Name */}
-                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Title</h1>
-                    {/* description */}
-                    <p className="text-gray-600 dark:text-gray-400">description</p>
-                </div>
-
+            <div className="w-full h-full ">
                 {/* Table Header */}
                 <div className="grid grid-cols-3 gap-6">
                     <div className={`p-4 bg-gray-300 dark:bg-[#333333] border-gray-200 dark:border-gray-600 ${backlogTasks.length == 0 && 'rounded-b-md'} rounded-t-md border-b`}>
