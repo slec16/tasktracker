@@ -1,5 +1,5 @@
-# Используем официальный Node.js образ с последней LTS версией
-FROM node:lts-alpine
+# Используем официальный Node.js образ с последней LTS версией для сборки
+FROM node:lts-alpine AS builder
 
 # Устанавливаем рабочую директорию
 WORKDIR /app
@@ -7,8 +7,8 @@ WORKDIR /app
 # Копируем package.json и package-lock.json (если есть)
 COPY package*.json ./
 
-# Устанавливаем зависимости
-RUN npm ci --only=production
+# Устанавливаем все зависимости (включая dev-депенденси для TypeScript и типов)
+RUN npm ci
 
 # Копируем исходный код
 COPY . .
@@ -16,8 +16,16 @@ COPY . .
 # Собираем приложение
 RUN npm run build
 
+# Минимальный рантайм-образ
+FROM node:lts-alpine AS runner
+
+WORKDIR /app
+
 # Устанавливаем serve для раздачи статических файлов
 RUN npm install -g serve
+
+# Копируем только собранные статические файлы
+COPY --from=builder /app/dist ./dist
 
 # Открываем порт
 EXPOSE 3000
