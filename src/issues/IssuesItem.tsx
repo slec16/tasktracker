@@ -88,7 +88,7 @@ const IssuesItem = (props: IssuesItemProps) => {
         dispatch(openDrawer({
             drawerId: `${id}`,
             boardId: `${boardId}`
-        }));
+        }))
     }
 
     const priorityStyles = (priority: string) => {

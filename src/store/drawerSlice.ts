@@ -12,7 +12,7 @@ const initialState: DrawerState = {
     drawerId: null,
     boardId: null,
     refetchState: false
-};
+}
 
 const drawerSlice = createSlice({
     name: 'drawer',
@@ -53,7 +53,7 @@ const drawerSlice = createSlice({
         }
 
     },
-});
+})
 
 export const { openDrawer, closeDrawer, toggleDrawer, setRefetchFalse, setRefetchTrue } = drawerSlice.actions
 export default drawerSlice.reducer

@@ -54,7 +54,7 @@ export const taskApi = {
     getTasks: async (): Promise<{data: Task[]}> => {
         const response = await fetch(`${baseUrl}/api/v1/tasks`)
         if (!response.ok) throw new Error('Failed to fetch tasks')
-        return response.json();
+        return response.json()
     },
 
     getTask: async (id: number): Promise<{data: Task}> => {
@@ -68,7 +68,7 @@ export const taskApi = {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(taskData),
-        });
+        })
         if (!response.ok) throw new Error('Failed to create task')
         return response.json()
     },
@@ -78,9 +78,9 @@ export const taskApi = {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(taskData),
-        });
-        if (!response.ok) throw new Error('Failed to update task');
-        return response.json();
+        })
+        if (!response.ok) throw new Error('Failed to update task')
+        return response.json()
     },
 
     updateTaskStatus: async (id: number, taskStatus: {status: string}): Promise<{data: {message: string}}> => {
@@ -88,10 +88,10 @@ export const taskApi = {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(taskStatus),
-        });
-        if (!response.ok) throw new Error('Failed to update task');
+        })
+        if (!response.ok) throw new Error('Failed to update task')
         // console.log(await response.json())
-        return response.json();
+        return response.json()
     },
 
 

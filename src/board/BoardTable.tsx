@@ -31,13 +31,13 @@ const BoardTable = (props: BoardTableType) => {
         },
     })
 
-    const keyboardSensor = useSensor(KeyboardSensor);
+    const keyboardSensor = useSensor(KeyboardSensor)
 
     const sensors = useSensors(
         pointerSensor,
         touchSensor,
         keyboardSensor
-    );
+    )
 
     const [openSuccessSnackbar, setOpenSuccessSnackbar] = useState(false)
     const [openErrorSnackbar, setOpenErrorSnackbar] = useState(false)

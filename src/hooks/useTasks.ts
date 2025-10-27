@@ -53,9 +53,9 @@ export const useUpdateTask = (id: number) => {
         mutationFn: ({ id, taskData }: { id: number; taskData: updateTask }) => taskApi.updateTask(id, taskData),
         onSuccess: (updatedUser) => {
             // Обновляем конкретную задачу в кэше
-            queryClient.setQueryData(taskKeys.detail(id), updatedUser);
+            queryClient.setQueryData(taskKeys.detail(id), updatedUser)
             // Инвалидируем список задач
-            queryClient.invalidateQueries({ queryKey: taskKeys.lists() });
+            queryClient.invalidateQueries({ queryKey: taskKeys.lists() })
         },
     })
 }
@@ -70,7 +70,7 @@ export const useUpdateTaskStatus = () => {
             // Обновляем конкретную задачу в кэше
             // queryClient.setQueryData(taskKeys.detail(id), updatedUser);
             // Инвалидируем список задач
-            queryClient.invalidateQueries({ queryKey: taskKeys.lists() });
+            queryClient.invalidateQueries({ queryKey: taskKeys.lists() })
         },
     })
 }
