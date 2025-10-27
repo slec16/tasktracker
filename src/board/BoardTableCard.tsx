@@ -6,6 +6,7 @@ import { useDraggable, useDndContext } from '@dnd-kit/core'
 import type { ReactNode } from "react"
 import { useParams } from "react-router-dom"
 import { useAppDispatch } from '../hooks/redux'
+import { useAppSelector } from '../hooks/redux'
 import { openDrawer } from '../store/drawerSlice'
 
 export function Draggable(props: { id: string, status: string, children: ReactNode }) {
@@ -47,6 +48,7 @@ const BoardTableCard = (props: BoardTableCardProps) => {
 
     const { task } = props
     const { id: boardId } = useParams()
+    const { drawerId } = useAppSelector((state) => state.drawer)
     const dispatch = useAppDispatch()
 
     const handleOpenDrawer = () => {
@@ -79,7 +81,9 @@ const BoardTableCard = (props: BoardTableCardProps) => {
             <div
                 onClick={handleOpenDrawer}
                 key={task.id}
-                className="bg-gray-50 dark:bg-gray-700/60 p-3 rounded-lg border border-gray-200 dark:border-gray-600 cursor-pointer hover:shadow-md"
+                className="bg-gray-50 dark:bg-gray-700/60 p-3 rounded-lg border border-gray-200 dark:border-gray-600 cursor-pointer hover:shadow-md
+                        aria-selected:bg-blue-100 aria-selected:border-blue-100 dark:aria-selected:bg-gray-900/50 dark:aria-selected:border-gray-600"
+                aria-selected={drawerId == String(task.id)}
             >
                 <h3 className="font-medium text-gray-900 dark:text-white text-sm mb-2 line-clamp-2">
                     {task.title}
