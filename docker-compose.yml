@@ -1,26 +1,28 @@
+version: "3.9"
+
 services:
   backend:
     build:
-      context: ./backend
+      context: https://github.com/avito-tech/tech-internship.git#main:Tech%20Internships/Frontend/Frontend-trainee-assignment-spring-2025/server
       dockerfile: Dockerfile
-    container_name: backend-container
+    container_name: tasktracker-backend
     ports:
       - "8080:8080"
-    networks:
-      - app-network
+    restart: unless-stopped
 
   frontend:
     build:
-      context: .  
-      dockerfile: Dockerfile.frontend  
-    container_name: tasktracker
+      context: .
+      dockerfile: Dockerfile
+    container_name: tasktracker-frontend
     ports:
       - "3000:3000"
     depends_on:
       - backend
-    networks:
-      - app-network
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped
 
 networks:
-  app-network:
-    driver: bridge
+  default:
+    name: tasktracker
