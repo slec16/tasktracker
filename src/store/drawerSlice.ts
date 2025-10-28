@@ -1,6 +1,6 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
 
-interface DrawerState {
+export interface DrawerState {
     isOpen: boolean
     drawerId: string | null
     boardId: string | null
