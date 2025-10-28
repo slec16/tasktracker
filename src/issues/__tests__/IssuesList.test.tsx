@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from '../test-utils'
+import { render, screen, fireEvent, waitFor } from '../../utils/test-utils'
 import IssuesList from '../IssuesList'
 import { type Task } from '../../api/taskApi'
 import { useSearchParams } from 'react-router-dom'

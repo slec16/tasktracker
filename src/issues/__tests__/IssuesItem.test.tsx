@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from '../test-utils'
+import { render, screen, fireEvent } from '../../utils/test-utils'
 import IssuesItem from '../IssuesItem'
 import { type Task } from '../../api/taskApi'
 import { openDrawer } from '../../store/drawerSlice'
