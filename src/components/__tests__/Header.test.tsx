@@ -8,10 +8,8 @@ describe('Header component', () => {
   })
 
   it('renders app title', () => {
-    render(<Header />)
-    expect(screen.getByText((_, element) => {
-      return element?.textContent === 'TaskTracker'
-    })).toBeInTheDocument()
+    const { container } = render(<Header />)
+    expect(container.querySelector('p')?.textContent).toBe('TaskTracker')
   })
 
   it('toggles theme on click', () => {
