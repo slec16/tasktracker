@@ -24,7 +24,7 @@ function App() {
         <Provider store={store}>
             <QueryClientProvider client={queryClient}>
                 <ThemeProvider defaultTheme="light">
-                    <div className='dark:text-slate-300 px-5'>
+                    <div className='flex flex-col h-screen overflow-hidden dark:text-slate-300 px-5'>
                         <Header />
                         <TabsRouter />
                         <div className='flex-1 flex flex-col overflow-hidden '>

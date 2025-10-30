@@ -108,7 +108,7 @@ const IssuesList = (props: IssuesListProps) => {
     }, [sortedTasks, query])
 
     return (
-        <div className="flex flex-col gap-y-3 px-10">
+        <div className="flex flex-1 h-full flex-col overflow-hidden gap-y-3 px-10">
             <div className="w-full self-start">
                 <TextField
                     fullWidth
@@ -188,12 +188,17 @@ const IssuesList = (props: IssuesListProps) => {
             {filteredTasks.length == 0 ?
                 <p className="text-center text-2xl font-semibold py-5 text-sky-600 dark:text-orange-400">Ничего не найдено</p>
                 :
-                filteredTasks.map((task) => (
-                    <IssuesItem
-                        key={task.id}
-                        taskData={task}
-                    />
-                ))
+                <div className="flex flex-1 flex-col gap-y-2 overflow-y-auto">
+                    {
+                        filteredTasks.map((task) => (
+                            <IssuesItem
+                                key={task.id}
+                                taskData={task}
+                            />
+                        ))
+                    }
+                </div>
+
             }
 
         </div>

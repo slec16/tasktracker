@@ -21,3 +21,24 @@ body {
   color: var(--text-color);
   transition: background-color 0.3s ease, color 0.3s ease;
 }
+
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-corner {
+    border-radius: 1px;
+}
+
+::-webkit-scrollbar-thumb {
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+    --un-bg-opacity: 1;
+    background-color: rgba(2, 132, 199, var(--un-bg-opacity));
+}
+
+::-webkit-scrollbar-thumb:hover {
+    --un-bg-opacity: 1;
+    background-color: rgba(125, 211, 252, var(--un-bg-opacity));
+}
