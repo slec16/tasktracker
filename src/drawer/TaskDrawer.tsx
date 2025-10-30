@@ -16,7 +16,11 @@ const TaskDrawer = () => {
     const { data: task, isLoading, refetch } = useTask(Number(drawerId))
 
     const handleClose = () => {
-        // ??? при закрытии id сбрасывает и drawer показывет перед закрытием форму создания задачи
+        const activeElement = document.activeElement as HTMLElement | null
+        if (activeElement && typeof activeElement.blur === 'function') {
+            activeElement.blur()
+        }
+        // TODO: при закрытии id сбрасывает и drawer показывет перед закрытием форму создания задачи
         dispatch(closeDrawer())
     }
 

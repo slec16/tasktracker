@@ -52,10 +52,10 @@ const DrawerContent = (props: DrawerContentProps) => {
         [users?.data]
     )
 
-    const [titleValue, setTitleValue] = useState(title)
-    const [descriptionValue, setDescriptionValue] = useState(description)
-    const [priorityValue, setPriorityValue] = useState(priority)
-    const [statusValue, setStatusValue] = useState(status)
+    const [titleValue, setTitleValue] = useState(title ?? '')
+    const [descriptionValue, setDescriptionValue] = useState(description ?? '')
+    const [priorityValue, setPriorityValue] = useState(priority ?? '')
+    const [statusValue, setStatusValue] = useState(status ?? '')
 
     const [assigneeValue, setAssigneeValue] = useState<{
         label: string;
@@ -81,10 +81,10 @@ const DrawerContent = (props: DrawerContentProps) => {
     }>({})
 
     useEffect(() => {
-        setTitleValue(title)
-        setDescriptionValue(description)
-        setPriorityValue(priority)
-        setStatusValue(status)
+        setTitleValue(title ?? '')
+        setDescriptionValue(description ?? '')
+        setPriorityValue(priority ?? '')
+        setStatusValue(status ?? '')
         setAssigneeValue(usersForAutocompleate.find(el => el.id === assignee?.id) || null)
     }, [title, description, priority, status, assignee, boardName, boardId, usersForAutocompleate])
 
