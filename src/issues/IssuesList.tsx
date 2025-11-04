@@ -6,6 +6,7 @@ import { TextField, InputAdornment, IconButton as MIconButton } from '@mui/mater
 import SearchIcon from '@mui/icons-material/Search'
 import CloseIcon from '@mui/icons-material/Close'
 import { useEffect, useMemo, useState } from "react"
+import { List } from "react-window"
 
 type IssuesListProps = {
     taskList: Task[]
@@ -189,14 +190,16 @@ const IssuesList = (props: IssuesListProps) => {
                 <p className="text-center text-2xl font-semibold py-5 text-sky-600 dark:text-orange-400">Ничего не найдено</p>
                 :
                 <div className="flex flex-1 flex-col gap-y-2 overflow-y-auto">
-                    {
-                        filteredTasks.map((task) => (
-                            <IssuesItem
-                                key={task.id}
-                                taskData={task}
-                            />
-                        ))
-                    }
+                    <List
+                        rowComponent={({ index, style, ariaAttributes }) => (
+                            <div style={style} {...ariaAttributes}>
+                                <IssuesItem taskData={filteredTasks[index]} />
+                            </div>
+                        )}
+                        rowCount={filteredTasks.length}
+                        rowHeight={70}
+                        rowProps={{}}
+                    />
                 </div>
 
             }
