@@ -118,8 +118,8 @@ const IssuesItem = (props: IssuesItemProps) => {
             aria-selected={drawerId == String(id)}
         >
             {/* Заголовок */}
-            <div className="text-left">
-                <h3 className="text-base font-bold text-gray-900 leading-tight dark:text-white group-hover:text-blue-700 dark:group-hover:text-blue-300 transition-colors duration-300">
+            <div className="text-left min-w-0 overflow-hidden" title={title}>
+                <h3 className="text-base font-bold leading-tight truncate text-gray-900 dark:text-white group-hover:text-blue-700 dark:group-hover:text-blue-300 transition-colors duration-300">
                     {title}
                 </h3>
             </div>
@@ -141,21 +141,17 @@ const IssuesItem = (props: IssuesItemProps) => {
             </div>
 
             {/* Доска */}
-            <div className="flex flex-col items-center">
-                {/* <p className="text-xs text-gray-500 font-medium mb-1 dark:text-gray-400
-                             group-hover:text-blue-600 dark:group-hover:text-blue-300 transition-colors duration-300">
-                    Доска
-                </p> */}
-                <p className="text-sm font-medium text-gray-900 dark:text-gray-300 text-center
+            <div className="flex flex-col items-center overflow-hidden min-w-0" title={boardName}>
+                <p className="text-sm font-medium truncate text-gray-900 dark:text-gray-300 text-center
                              group-hover:text-blue-700 dark:group-hover:text-blue-300 transition-colors duration-300">
                     {boardName}
                 </p>
             </div>
 
             {/* Ответственный */}
-            <div className="flex flex-col items-center">
+            <div className="flex flex-col items-center min-w-0 overflow-hidden" title={assignee.fullName}>
                 {/* <p className="text-xs text-gray-500 font-medium mb-1 dark:text-gray-400">Ответственный</p> */}
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 truncate">
                     <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center dark:bg-orange-600">
                         <span className="text-xs font-medium text-white">
                             {assignee.fullName.split(' ').map(n => n[0]).join('')}
