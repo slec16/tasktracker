@@ -5,6 +5,7 @@ import BoardTableCard from './BoardTableCard'
 import { DndContext, type DragEndEvent, useSensor, PointerSensor, TouchSensor, KeyboardSensor, useSensors } from '@dnd-kit/core'
 import { Droppable } from './Droppable'
 import Snackbar from '@mui/material/Snackbar'
+import { List } from 'react-window'
 
 type BoardTableType = {
     boardTasks: BoardTasks[]
@@ -200,7 +201,7 @@ const BoardTable = (props: BoardTableType) => {
 
     return (
         <>
-            <div className="w-full h-full ">
+            <div className="flex flex-1 flex-col overflow-y-auto">
                 {/* Table Header */}
                 <div className="grid grid-cols-3 gap-6">
                     <div className={`p-4 bg-gray-300 dark:bg-[#333333] border-gray-200 dark:border-gray-600 ${backlogTasks.length == 0 && 'rounded-b-md'} rounded-t-md border-b`}>
@@ -230,7 +231,7 @@ const BoardTable = (props: BoardTableType) => {
                 </div>
 
                 {/* Table columns */}
-                <div className="grid grid-cols-3 gap-6">
+                <div className="grid grid-cols-3 gap-6 ">
 
                     <DndContext onDragEnd={handleDragEnd} sensors={sensors}>
 
@@ -239,6 +240,16 @@ const BoardTable = (props: BoardTableType) => {
                                 {backlogTasks.map((task) => (
                                     <BoardTableCard task={task} key={task.id}/>
                                 ))}
+                                {/* <List
+                                    rowComponent={({ index, style, ariaAttributes }) => (
+                                        <div style={style} {...ariaAttributes}>
+                                            <BoardTableCard task={backlogTasks[index]} />
+                                        </div>
+                                    )}
+                                    rowCount={backlogTasks.length}
+                                    rowHeight={86}
+                                    rowProps={{}}
+                                /> */}
                             </div>
                         </Droppable>
 
@@ -247,6 +258,16 @@ const BoardTable = (props: BoardTableType) => {
                                 {inProgressTasks.map((task) => (
                                     <BoardTableCard task={task} key={task.id} />
                                 ))}
+                                {/* <List
+                                    rowComponent={({ index, style, ariaAttributes }) => (
+                                        <div style={style} {...ariaAttributes}>
+                                            <BoardTableCard task={inProgressTasks[index]} />
+                                        </div>
+                                    )}
+                                    rowCount={inProgressTasks.length}
+                                    rowHeight={86}
+                                    rowProps={{}}
+                                /> */}
                             </div>
                         </Droppable>
 
@@ -255,6 +276,16 @@ const BoardTable = (props: BoardTableType) => {
                                 {doneTasks.map((task) => (
                                     <BoardTableCard task={task} key={task.id} />
                                 ))}
+                                {/* <List
+                                    rowComponent={({ index, style, ariaAttributes }) => (
+                                        <div style={style} {...ariaAttributes}>
+                                            <BoardTableCard task={doneTasks[index]} />
+                                        </div>
+                                    )}
+                                    rowCount={doneTasks.length}
+                                    rowHeight={86}
+                                    rowProps={{}}
+                                /> */}
                             </div>
                         </Droppable>
 

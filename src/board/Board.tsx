@@ -29,16 +29,19 @@ const Board = () => {
 
     if (isLoading) return <div className="items-center flex justify-center"><LoadingSpinner /></div>
     if (isError) return <div>Ошибка: {error.message}</div>
+    // TODO: virtualizing board table & drag inside the table
     return (
-        <div className="px-5 mt-5">
+        <div className="py-5 px-5 mt-5 flex flex-1 h-full flex-col overflow-hidden">
             <div className="mb-6">
                 <h1 className="text-2xl font-bold mb-1 text-gray-900 dark:text-white">{title}</h1>
                 <p className="text-gray-600 dark:text-gray-400">{description}</p>
             </div>
-            {boardTasks && <BoardTable
-                boardTasks={boardTasks.data}
-                onRefresh={refetch}
-            />}
+            <div className="flex flex-1 h-full flex-col overflow-hidden ">
+                {boardTasks && <BoardTable
+                    boardTasks={boardTasks.data}
+                    onRefresh={refetch}
+                />}
+            </div>
         </div>
     )
 }

@@ -6,6 +6,8 @@ import { TextField, InputAdornment, IconButton as MIconButton } from '@mui/mater
 import SwapVertIcon from '@mui/icons-material/SwapVert'
 import SearchIcon from '@mui/icons-material/Search'
 import CloseIcon from '@mui/icons-material/Close'
+import { List } from "react-window"
+
 type BoardsListProps = {
     boardsList: Board[]
 }
@@ -86,7 +88,7 @@ const BoardsList = (props: BoardsListProps) => {
     }, [sortedBoards, query])
 
     return (
-        <div className="flex flex-col gap-y-3 px-10">
+        <div className="flex flex-1 h-full flex-col gap-y-3 px-10">
             <div className="w-full self-start">
                 <TextField
                     fullWidth
@@ -152,12 +154,24 @@ const BoardsList = (props: BoardsListProps) => {
             {filteredBoards.length == 0 ?
                 <p className="text-center text-2xl font-semibold py-5 text-sky-600 dark:text-orange-400">Ничего не найдено</p>
                 :
-                filteredBoards.map((board) => (
-                    <BoardsItem
-                        key={board.id}
-                        boardData={board}
+                // filteredBoards.map((board) => (
+                //     <BoardsItem
+                //         key={board.id}
+                //         boardData={board}
+                //     />
+                // ))
+                <div className="flex flex-1 flex-col gap-y-2 overflow-y-auto">
+                    <List
+                        rowComponent={({ index, style, ariaAttributes }) => (
+                            <div style={style} {...ariaAttributes}>
+                                <BoardsItem boardData={filteredBoards[index]} />
+                            </div>
+                        )}
+                        rowCount={filteredBoards.length}
+                        rowHeight={70}
+                        rowProps={{}}
                     />
-                ))
+                </div>
             }
 
         </div>
