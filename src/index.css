@@ -38,7 +38,19 @@ body {
     background-color: rgba(2, 132, 199, var(--un-bg-opacity));
 }
 
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+    --un-bg-opacity: 1;
+    background-color: rgba(202, 138, 4, var(--un-bg-opacity));
+}
+
 ::-webkit-scrollbar-thumb:hover {
     --un-bg-opacity: 1;
     background-color: rgba(125, 211, 252, var(--un-bg-opacity));
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+    --un-bg-opacity: 1;
+    background-color: rgba(250, 225, 70, var(--un-bg-opacity));
 }
