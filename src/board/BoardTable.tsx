@@ -1,11 +1,12 @@
-import { useEffect, useState, useRef } from 'react'
+import { useRef, useMemo } from 'react'
 import { type BoardTasks } from '../api/boardApi'
-import { useUpdateTaskStatus } from '../hooks/useTasks'
 import BoardTableCard from './BoardTableCard'
-import { DndContext, type DragEndEvent, useSensor, PointerSensor, TouchSensor, KeyboardSensor, useSensors } from '@dnd-kit/core'
+import { DndContext, useSensor, PointerSensor, TouchSensor, KeyboardSensor, useSensors } from '@dnd-kit/core'
 import { Droppable } from './Droppable'
 import Snackbar from '@mui/material/Snackbar'
 import { restrictToElement } from './restrictToElement'
+import { useDragAndDrop } from '../hooks/useDragAndDrop'
+import { TASK_STATUS, BOARD_COLUMNS } from './constants'
 
 type BoardTableType = {
     boardTasks: BoardTasks[]
@@ -15,8 +16,17 @@ type BoardTableType = {
 const BoardTable = (props: BoardTableType) => {
 
     const { boardTasks, onRefresh } = props
-    const { mutate } = useUpdateTaskStatus()
 
+    const {
+        handleDragEnd,
+        openSuccessSnackbar,
+        openErrorSnackbar,
+        handleErrorClose,
+        handleSuccessClose
+    } = useDragAndDrop({
+        boardTasks,
+        onRefresh
+    })
 
     const pointerSensor = useSensor(PointerSensor, {
         activationConstraint: {
@@ -42,163 +52,21 @@ const BoardTable = (props: BoardTableType) => {
 
     const containerRef = useRef<HTMLDivElement | null>(null)
 
-    const [openSuccessSnackbar, setOpenSuccessSnackbar] = useState(false)
-    const [openErrorSnackbar, setOpenErrorSnackbar] = useState(false)
-
-    const [backlogTasks, setBacklogTasks] = useState<BoardTasks[]>([])
-    const [inProgressTasks, setInProgressTasks] = useState<BoardTasks[]>([])
-    const [doneTasks, setDoneTasks] = useState<BoardTasks[]>([])
-
-    const handleSuccessClose = () => {
-        setOpenSuccessSnackbar(false)
-    }
-
-    const handleErrorClose = () => {
-        setOpenErrorSnackbar(false)
-    }
-
-    useEffect(() => {
-        setBacklogTasks(() => {
-            return boardTasks.filter(task => task.status === 'Backlog')
-        })
-        setInProgressTasks(() => {
-            return boardTasks.filter(task => task.status === 'InProgress')
-        })
-        setDoneTasks(() => {
-            return boardTasks.filter(task => task.status === 'Done')
-        })
-    }, [props])
-
-
-    function handleDragEnd(event: DragEndEvent) {
-        const { over, active } = event  // over - куда, active - кого
-        // console.log(over, active.data.current)
-
-        switch (over?.id) {
-            case 'backlog': //куда
-                switch (active.data.current?.status as unknown as string) {
-                    case 'InProgress':
-                        const taskFromProgress = boardTasks.find(task => task.id == active.id)
-                        taskFromProgress && mutate(
-                            {
-                                id: taskFromProgress?.id,
-                                taskStatus: {
-                                    status: 'Backlog'
-                                }
-                            }, {
-                            onSuccess: () => {
-                                setOpenSuccessSnackbar(true)
-                                onRefresh()
-                            },
-                            onError: () => {
-                                setOpenErrorSnackbar(true)
-                            }
-                        }
-                        )
-                        break
-                    case 'Done':
-                        const taskFromDone = boardTasks.find(task => task.id == active.id)
-                        taskFromDone && mutate({
-                            id: taskFromDone.id,
-                            taskStatus: {
-                                status: 'Backlog'
-                            }
-                        }, {
-                            onSuccess: () => {
-                                setOpenSuccessSnackbar(true)
-                                onRefresh()
-                            },
-                            onError: () => {
-                                setOpenErrorSnackbar(true)
-                            }
-                        }
-                        )
-                        break
-                }
-                break
-            case 'inprogress': //куда
-                switch (active.data.current?.status as unknown as string) {
-                    case 'Backlog':
-                        const taskFromBacklog = boardTasks.find(task => task.id == active.id)
-                        taskFromBacklog && mutate({
-                            id: taskFromBacklog.id,
-                            taskStatus: {
-                                status: 'InProgress'
-                            }
-                        }, {
-                            onSuccess: () => {
-                                setOpenSuccessSnackbar(true)
-                                onRefresh()
-                            },
-                            onError: () => {
-                                setOpenErrorSnackbar(true)
-                            }
-                        }
-                        )
-                        break
-                    case 'Done':
-                        const taskFromDone = boardTasks.find(task => task.id == active.id)
-                        taskFromDone && mutate({
-                            id: taskFromDone.id,
-                            taskStatus: {
-                                status: 'InProgress'
-                            }
-                        }, {
-                            onSuccess: () => {
-                                setOpenSuccessSnackbar(true)
-                                onRefresh()
-                            },
-                            onError: () => {
-                                setOpenErrorSnackbar(true)
-                            }
-                        }
-                        )
-                        break
-                }
-                break
-            case 'done': //куда
-                switch (active.data.current?.status as unknown as string) {
-                    case 'Backlog':
-                        const taskFromBacklog = boardTasks.find(task => task.id == active.id)
-                        taskFromBacklog && mutate({
-                            id: taskFromBacklog.id,
-                            taskStatus: {
-                                status: 'Done'
-                            }
-                        }, {
-                            onSuccess: () => {
-                                setOpenSuccessSnackbar(true)
-                                onRefresh()
-                            },
-                            onError: () => {
-                                setOpenErrorSnackbar(true)
-                            }
-                        }
-                        )
-                        break
-                    case 'InProgress':
-                        const taskFromProgress = boardTasks.find(task => task.id == active.id)
-                        taskFromProgress && mutate({
-                            id: taskFromProgress.id,
-                            taskStatus: {
-                                status: 'Done'
-                            }
-                        }, {
-                            onSuccess: () => {
-                                setOpenSuccessSnackbar(true)
-                                onRefresh()
-                            },
-                            onError: () => {
-                                setOpenErrorSnackbar(true)
-                            }
-                        }
-                        )
-                        break
-                }
-                break
+    const taskByStatus = useMemo(() => {
+        const group: Record<string, BoardTasks[]> = {
+            [TASK_STATUS.BACKLOG]: [],
+            [TASK_STATUS.DONE]: [],
+            [TASK_STATUS.IN_PROGRESS]: []
         }
-    }
 
+        boardTasks.forEach((task) => {
+            if (task.status in group) {
+                group[task.status].push(task)
+            }
+        })
+
+        return group
+    }, [boardTasks])
 
 
     return (
@@ -206,60 +74,44 @@ const BoardTable = (props: BoardTableType) => {
             <div className="flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
                 {/* Table Header */}
                 <div className="grid grid-cols-3 gap-6">
-                    <div className={`p-4 bg-gray-300 dark:bg-[#333333] border-gray-200 dark:border-gray-600 ${backlogTasks.length == 0 && 'rounded-b-md'} rounded-t-md border-b`}>
-                        <h2 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center justify-between">
-                            Бэклог
-                            <span className="bg-blue-300 dark:bg-orange-500 text-gray-700 dark:text-gray-300 text-sm font-medium px-3 py-1 rounded-full">
-                                {backlogTasks.length}
-                            </span>
-                        </h2>
-                    </div>
-                    <div className={`p-4 bg-gray-300 dark:bg-[#333333] border-gray-200 dark:border-gray-600 ${inProgressTasks.length == 0 && 'rounded-b-md'} rounded-t-md border-b`}>
-                        <h2 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center justify-between">
-                            В процессе
-                            <span className="bg-blue-300 dark:bg-orange-500 text-gray-700 dark:text-gray-300 text-sm font-medium px-3 py-1 rounded-full">
-                                {inProgressTasks.length}
-                            </span>
-                        </h2>
-                    </div>
-                    <div className={`p-4 bg-gray-300 dark:bg-[#333333] border-gray-200 dark:border-gray-600 ${doneTasks.length == 0 && 'rounded-b-md'} rounded-t-md border-b`}>
-                        <h2 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center justify-between">
-                            Выполнено
-                            <span className="bg-blue-300 dark:bg-orange-500 text-gray-700 dark:text-gray-300 text-sm font-medium px-3 py-1 rounded-full">
-                                {doneTasks.length}
-                            </span>
-                        </h2>
-                    </div>
+                    {BOARD_COLUMNS.map((column) => {
+                        const tasks = taskByStatus[column.status] || []
+                        const isEmpty = tasks.length === 0
+
+                        return (
+                            <div
+                                key={column.id}
+                                className={`p-4 bg-gray-300 dark:bg-[#333333] border-gray-200 dark:border-gray-600 ${isEmpty && 'rounded-b-md'} rounded-t-md border-b`}
+                            >
+                                <h2 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center justify-between">
+                                    {column.title}
+                                    <span className="bg-blue-300 dark:bg-orange-500 text-gray-700 dark:text-gray-300 text-sm font-medium px-3 py-1 rounded-full">
+                                        {tasks.length}
+                                    </span>
+                                </h2>
+                            </div>
+                        )
+                    })}
                 </div>
 
                 {/* Table columns */}
                 <div ref={containerRef} className="grid grid-cols-3 gap-6 ">
 
                     <DndContext onDragEnd={handleDragEnd} sensors={sensors} modifiers={[restrictToElement(() => containerRef.current)]}>
+                        {BOARD_COLUMNS.map((column) => {
+                            const tasks = taskByStatus[column.status] || []
+                            const isEmpty = tasks.length === 0
 
-                        <Droppable key={'backlog'} id={'backlog'}>
-                            <div className={`flex flex-col gap-y-2 w-full h-fit bg-gray-300 dark:bg-[#333333] ${backlogTasks.length > 0 ? 'py-5 px-1' : 'p-0'} rounded-b-md`}>
-                                {backlogTasks.map((task) => (
-                                    <BoardTableCard task={task} key={task.id}/>
-                                ))}                                
-                            </div>
-                        </Droppable>
-
-                        <Droppable key={'inprogress'} id={'inprogress'}>
-                            <div className={`flex flex-col gap-y-2 w-full h-fit bg-gray-300 dark:bg-[#333333] ${inProgressTasks.length > 0 ? 'py-5 px-1' : 'p-0'} rounded-b-md`}>
-                                {inProgressTasks.map((task) => (
-                                    <BoardTableCard task={task} key={task.id} />
-                                ))}
-                            </div>
-                        </Droppable>
-
-                        <Droppable key={'done'} id={'done'}>
-                            <div className={`flex flex-col gap-y-2 w-full h-fit bg-gray-300 dark:bg-[#333333] ${doneTasks.length > 0 ? 'py-5 px-1' : 'p-0'} rounded-b-md`}>
-                                {doneTasks.map((task) => (
-                                    <BoardTableCard task={task} key={task.id} />
-                                ))}
-                            </div>
-                        </Droppable>
+                            return (
+                                <Droppable key={column.id} id={column.id}>
+                                    <div className={`flex flex-col gap-y-2 w-full h-fit bg-gray-300 dark:bg-[#333333] ${!isEmpty ? 'py-5 px-1' : 'p-0'} rounded-b-md`}>
+                                        {tasks.map((task) => (
+                                            <BoardTableCard task={task} key={task.id} />
+                                        ))}
+                                    </div>
+                                </Droppable>
+                            )
+                        })}
 
                     </DndContext>
 

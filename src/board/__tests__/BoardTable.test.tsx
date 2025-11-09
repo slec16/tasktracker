@@ -1,3 +1,4 @@
+// TODO - обновить с учетом использования useDragAndDrop
 import { render, screen, act, waitFor } from '../../utils/test-utils'
 import BoardTable from '../BoardTable'
 
