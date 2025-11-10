@@ -15,13 +15,14 @@ const TaskDrawer = () => {
 
     const { data: task, isLoading, refetch } = useTask(Number(drawerId))
 
+    const [isClosing, setIsClosing] = useState(false)
+
     const handleClose = () => {
         const activeElement = document.activeElement as HTMLElement | null
         if (activeElement && typeof activeElement.blur === 'function') {
             activeElement.blur()
         }
-        // TODO: при закрытии id сбрасывает и drawer показывет перед закрытием форму создания задачи
-        dispatch(closeDrawer())
+        setIsClosing(true)
     }
 
     const [openCreateSuccess, setOpenCreateSuccess] = useState(false)
@@ -66,10 +67,18 @@ const TaskDrawer = () => {
 
     return (
         <Drawer
-            open={isOpen}
+            open={isOpen && !isClosing}
             onClose={handleClose}
             inert={!isOpen}
             anchor='right'
+            slotProps={{
+                transition: {
+                    onExited: () => {
+                        dispatch(closeDrawer())
+                        setIsClosing(false)
+                    }
+                }
+            }}
             sx={{
                 '& .MuiDrawer-paper': {
                     width: '33vw',
